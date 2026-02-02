@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Flows - Content AI Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>Content AI Platform</h2>
+            <p>Architecture Documentation</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="architecture.html">Architecture Diagram</a></li>
+            <li><a href="data-flows.html" class="active">Data Flows</a></li>
+            <li><a href="components.html">Components</a></li>
+            <li><a href="integration.html">Integration Patterns</a></li>
+            <li><a href="cost-analysis.html">Cost Analysis</a></li>
+            <li><a href="calculator.html" class="highlight">Cost Calculator</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Last Updated: February 2026</p>
+        </div>
+    </nav>
+
+    <main class="content">
+        <header class="page-header">
+            <h1>Data Flow Diagrams</h1>
+            <p class="subtitle">Sequence diagrams showing all processing paths through the platform</p>
+        </header>
+
+        <div class="alert alert-info">
+            <strong>Interactive Diagrams:</strong> These Mermaid diagrams show the complete data flow for each entry point.
+            Hover over elements for details.
+        </div>
+
+        <!-- Flow Navigation -->
+        <section class="entry-point-cards" style="margin-bottom: 40px;">
+            <a href="#frontend-flow" class="entry-card" style="text-decoration: none;">
+                <h4>1. Frontend UI</h4>
+                <p>User-initiated via React</p>
+            </a>
+            <a href="#api-flow" class="entry-card" style="text-decoration: none;">
+                <h4>2. Self-Service API</h4>
+                <p>Direct API calls</p>
+            </a>
+            <a href="#s3-cip-flow" class="entry-card" style="text-decoration: none;">
+                <h4>3. S3 to CIP</h4>
+                <p>Document processing</p>
+            </a>
+            <a href="#s3-vpe-flow" class="entry-card" style="text-decoration: none;">
+                <h4>4. S3 to VPE</h4>
+                <p>Video processing</p>
+            </a>
+            <a href="#direct-api-flow" class="entry-card" style="text-decoration: none;">
+                <h4>5. Direct CIP/VPE</h4>
+                <p>Bypass orchestration</p>
+            </a>
+        </section>
+
+        <!-- Flow 1: Frontend Initiated -->
+        <section id="frontend-flow" class="diagram-section">
+            <h2>1. Frontend-Initiated Flow</h2>
+            <p style="margin-bottom: 24px; color: var(--text-secondary);">
+                User uploads documents/videos via React UI, processing is orchestrated by Step Functions.
+            </p>
+            <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant UI as React UI
+    participant Cognito
+    participant APIGW as API Gateway
+    participant Lambda as API Lambda
+    participant DDB as DynamoDB
+    participant S3
+    participant SFN as Step Functions
+    participant CIP
+    participant VPE
+    participant SNS
+    participant SQS
+
+    User->>UI: 1. Login
+    UI->>Cognito: 2. Authenticate
+    Cognito-->>UI: 3. JWT Token
+
+    User->>UI: 4. Create Job
+    UI->>APIGW: 5. POST /jobs
+    APIGW->>Lambda: 6. Invoke
+    Lambda->>DDB: 7. Create Job
+    Lambda->>S3: 8. Generate Presigned URL
+    Lambda-->>UI: 9. Upload URL
+
+    UI->>S3: 10. Upload Files
+    S3-->>UI: 11. Complete
+
+    UI->>APIGW: 12. POST /jobs/{id}/process
+    APIGW->>Lambda: 13. Start Processing
+    Lambda->>SFN: 14. StartExecution
+
+    SFN->>CIP: 15. Process Documents
+    SFN->>VPE: 16. Process Videos
+
+    CIP->>SNS: 17. Job Complete
+    VPE->>SNS: 18. Job Complete
+    SNS->>SQS: 19. Queue Messages
+    SQS->>Lambda: 20. Process Output
+    Lambda->>SFN: 21. SendTaskSuccess
+
+    SFN->>DDB: 22. Complete Job
+
+    User->>UI: 23. Poll Status
+    UI->>APIGW: 24. GET /jobs/{id}
+    APIGW->>Lambda: 25. Get Status
+    Lambda-->>UI: 26. Results
+            </div>
+
+            <div class="card" style="margin-top: 24px;">
+                <h4>Key Characteristics</h4>
+                <ul class="card-features">
+                    <li>Full orchestration with Step Functions</li>
+                    <li>Cognito JWT authentication</li>
+                    <li>Real-time status polling</li>
+                    <li>Human review integration available</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Flow 2: API Initiated -->
+        <section id="api-flow" class="diagram-section">
+            <h2>2. API-Initiated Flow</h2>
+            <p style="margin-bottom: 24px; color: var(--text-secondary);">
+                External systems call the self-service-imaging-app API directly for automated processing.
+            </p>
+            <div class="mermaid">
+sequenceDiagram
+    participant External as External System
+    participant APIGW as API Gateway
+    participant Lambda as API Lambda
+    participant DDB as DynamoDB
+    participant S3
+    participant SFN as Step Functions
+    participant CIP as CIP/VPE
+    participant SNS
+    participant SQS
+
+    External->>APIGW: 1. POST /jobs (API Key)
+    APIGW->>Lambda: 2. Create Job
+    Lambda->>DDB: 3. Store Job
+    Lambda->>S3: 4. Presigned URL
+    Lambda-->>External: 5. Job ID + URL
+
+    External->>S3: 6. Upload Files
+
+    External->>APIGW: 7. POST /jobs/{id}/process
+    APIGW->>Lambda: 8. Start Processing
+    Lambda->>SFN: 9. StartExecution
+    Lambda-->>External: 10. 202 Accepted
+
+    SFN->>CIP: 11. Process
+    CIP->>SNS: 12. Complete
+    SNS->>SQS: 13. Queue
+    SQS->>Lambda: 14. Handle Output
+    Lambda->>SFN: 15. SendTaskSuccess
+    SFN->>DDB: 16. Update Status
+
+    External->>APIGW: 17. GET /jobs/{id}
+    APIGW->>Lambda: 18. Query
+    Lambda-->>External: 19. Status + Results
+            </div>
+
+            <div class="card" style="margin-top: 24px;">
+                <h4>Key Characteristics</h4>
+                <ul class="card-features">
+                    <li>API key or JWT authentication</li>
+                    <li>Batch/automated operations</li>
+                    <li>Supports public and private endpoints</li>
+                    <li>Webhook callbacks optional</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Flow 3: S3 Direct to CIP -->
+        <section id="s3-cip-flow" class="diagram-section">
+            <h2>3. Direct S3 Upload to CIP</h2>
+            <p style="margin-bottom: 24px; color: var(--text-secondary);">
+                Files uploaded directly to CIP S3 bucket trigger automatic document processing.
+            </p>
+            <div class="mermaid">
+sequenceDiagram
+    participant User as User/System
+    participant S3 as S3 (CIP Input)
+    participant SQS
+    participant Lambda as Start Textract
+    participant DDB as DynamoDB
+    participant Textract
+    participant EventBridge
+    participant SFN as Step Functions
+    participant Comprehend
+    participant Bedrock
+    participant S3Out as S3 (Output)
+    participant SNS
+
+    User->>S3: 1. PUT document.pdf
+    S3->>SQS: 2. S3 Event
+    SQS->>Lambda: 3. Trigger
+    Lambda->>DDB: 4. Create Job Record
+    Lambda->>Textract: 5. StartDocumentAnalysis
+
+    Note over Textract: Async Processing
+
+    Textract->>EventBridge: 6. Job Complete Event
+    EventBridge->>Lambda: 7. Trigger Handler
+    Lambda->>S3: 8. Get Textract Results
+    Lambda->>SFN: 9. Continue Workflow
+
+    SFN->>Comprehend: 10. Detect PII
+    Comprehend-->>SFN: 11. PII Entities
+
+    SFN->>Bedrock: 12. Classify Document
+    Bedrock-->>SFN: 13. Classification
+
+    SFN->>S3Out: 14. Store Results
+    SFN->>DDB: 15. Update Status
+    SFN->>SNS: 16. Publish Completion
+            </div>
+
+            <div class="card" style="margin-top: 24px;">
+                <h4>Key Characteristics</h4>
+                <ul class="card-features">
+                    <li>Event-driven, no API Gateway</li>
+                    <li>Lowest infrastructure cost</li>
+                    <li>Best for high-volume batch processing</li>
+                    <li>Automatic scaling</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Flow 4: S3 Direct to VPE -->
+        <section id="s3-vpe-flow" class="diagram-section">
+            <h2>4. Direct S3 Upload to VPE</h2>
+            <p style="margin-bottom: 24px; color: var(--text-secondary);">
+                Videos uploaded directly to VPE S3 bucket trigger automatic video analysis.
+            </p>
+            <div class="mermaid">
+sequenceDiagram
+    participant User as User/System
+    participant S3 as S3 (VPE Input)
+    participant Lambda as Receive Upload
+    participant DDB as DynamoDB
+    participant Transcribe
+    participant Rekognition
+    participant Translate
+    participant Bedrock
+    participant S3Out as S3 (Output)
+    participant SNS
+
+    User->>S3: 1. PUT video.mp4
+    S3->>Lambda: 2. S3 Event
+    Lambda->>DDB: 3. Create Job/Transaction
+
+    par Parallel Processing
+        Lambda->>Transcribe: 4a. Start Transcription
+        Lambda->>Rekognition: 4b. Start Label Detection
+        Lambda->>Rekognition: 4c. Start Face Detection
+        Lambda->>Rekognition: 4d. Start Moderation
+    end
+
+    Note over Transcribe,Rekognition: Async Processing
+
+    Transcribe->>SNS: 5. Transcription Complete
+    SNS->>Lambda: 6. Handle Transcript
+    Lambda->>S3Out: 7. Store Subtitles (SRT/VTT)
+
+    Lambda->>Translate: 8. Translate Transcript
+    Translate-->>Lambda: 9. Translated Text
+    Lambda->>S3Out: 10. Store Translations
+
+    Rekognition->>SNS: 11. Analysis Complete
+    SNS->>Lambda: 12. Compile Results
+
+    Lambda->>Bedrock: 13. Generate Summary
+    Bedrock-->>Lambda: 14. Summary Text
+
+    Lambda->>S3Out: 15. Store All Results
+    Lambda->>DDB: 16. Update Status
+    Lambda->>SNS: 17. Job Complete
+            </div>
+
+            <div class="card" style="margin-top: 24px;">
+                <h4>Key Characteristics</h4>
+                <ul class="card-features">
+                    <li>Parallel video analysis</li>
+                    <li>Multi-language subtitle generation</li>
+                    <li>AI-powered summaries</li>
+                    <li>Face clustering and indexing</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Flow 5: Direct API to CIP/VPE -->
+        <section id="direct-api-flow" class="diagram-section">
+            <h2>5. Direct API to CIP/VPE Services</h2>
+            <p style="margin-bottom: 24px; color: var(--text-secondary);">
+                Call CIP or VPE services directly, bypassing the orchestration layer for lower latency.
+            </p>
+            <div class="mermaid">
+sequenceDiagram
+    participant Client
+    participant APIGW as CIP/VPE API Gateway
+    participant Lambda as Upload Handler
+    participant S3
+    participant DDB as DynamoDB
+    participant Processing as Processing Pipeline
+    participant SNS
+
+    Client->>APIGW: 1. POST /upload (API Key)
+    APIGW->>Lambda: 2. Handle Request
+    Lambda->>DDB: 3. Create Job
+    Lambda->>S3: 4. Presigned URL
+    Lambda-->>Client: 5. Job ID + URL
+
+    Client->>S3: 6. Upload File
+
+    Note over S3,Processing: S3 Event Triggers Processing
+
+    S3->>Processing: 7. Start Processing
+    Processing->>DDB: 8. Update Progress
+    Processing->>SNS: 9. Publish Completion
+
+    Client->>APIGW: 10. GET /jobs/{id}/status
+    APIGW->>Lambda: 11. Query Status
+    Lambda->>DDB: 12. Get Job
+    Lambda-->>Client: 13. Status + Results
+            </div>
+
+            <div class="card" style="margin-top: 24px;">
+                <h4>Key Characteristics</h4>
+                <ul class="card-features">
+                    <li>Minimal orchestration overhead</li>
+                    <li>Lower latency for simple workflows</li>
+                    <li>Direct service access</li>
+                    <li>Requires client to manage job lifecycle</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Flow Comparison -->
+        <section>
+            <h2>Entry Point Comparison</h2>
+            <table class="content-table">
+                <thead>
+                    <tr>
+                        <th>Entry Point</th>
+                        <th>Authentication</th>
+                        <th>Orchestration</th>
+                        <th>Best For</th>
+                        <th>Cost Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Frontend UI</strong></td>
+                        <td>Cognito JWT</td>
+                        <td>Full Step Functions</td>
+                        <td>Interactive users</td>
+                        <td>+$0.001/item</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Self-Service API</strong></td>
+                        <td>API Key / JWT</td>
+                        <td>Full Step Functions</td>
+                        <td>System integrations</td>
+                        <td>+$0.0008/item</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Direct CIP/VPE API</strong></td>
+                        <td>API Key</td>
+                        <td>Service-level only</td>
+                        <td>Simple processing</td>
+                        <td>Base cost</td>
+                    </tr>
+                    <tr>
+                        <td><strong>S3 Direct Upload</strong></td>
+                        <td>IAM / Presigned</td>
+                        <td>Event-driven</td>
+                        <td>High-volume batch</td>
+                        <td>-$0.0002/item</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Cost CTA -->
+        <section class="cta-box" style="margin-top: 40px;">
+            <p>Want to estimate costs for your specific entry point and volume?</p>
+            <a href="calculator.html" class="btn btn-primary">Use the Cost Calculator</a>
+        </section>
+    </main>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</body>
+</html>

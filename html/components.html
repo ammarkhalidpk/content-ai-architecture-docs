@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Components - Content AI Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>Content AI Platform</h2>
+            <p>Architecture Documentation</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="architecture.html">Architecture Diagram</a></li>
+            <li><a href="data-flows.html">Data Flows</a></li>
+            <li><a href="components.html" class="active">Components</a></li>
+            <li><a href="integration.html">Integration Patterns</a></li>
+            <li><a href="cost-analysis.html">Cost Analysis</a></li>
+            <li><a href="calculator.html" class="highlight">Cost Calculator</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Last Updated: February 2026</p>
+        </div>
+    </nav>
+
+    <main class="content">
+        <header class="page-header">
+            <h1>Component Documentation</h1>
+            <p class="subtitle">Detailed documentation for each platform component</p>
+        </header>
+
+        <!-- Component Navigation -->
+        <section class="entry-point-cards" style="margin-bottom: 40px;">
+            <a href="#frontend" class="entry-card" style="text-decoration: none;">
+                <h4>Frontend UI</h4>
+                <p>React Application</p>
+            </a>
+            <a href="#orchestration" class="entry-card" style="text-decoration: none;">
+                <h4>Orchestration</h4>
+                <p>self-service-imaging-app</p>
+            </a>
+            <a href="#cip" class="entry-card" style="text-decoration: none;">
+                <h4>Document AI (CIP)</h4>
+                <p>textract-imaging-service</p>
+            </a>
+            <a href="#vpe" class="entry-card" style="text-decoration: none;">
+                <h4>Video AI (VPE)</h4>
+                <p>video-processing-enrichment</p>
+            </a>
+        </section>
+
+        <!-- Frontend Component -->
+        <section id="frontend">
+            <h2>Frontend UI (fbdms-adhoc-imaging-ui)</h2>
+            <p style="margin-bottom: 24px; color: var(--text-secondary);">
+                React-based single-page application providing user interface for job management, document classification, and policy management.
+            </p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Technology Stack</h3>
+                    <ul class="card-features">
+                        <li>React 18.3.1</li>
+                        <li>React Router DOM 7.5</li>
+                        <li>Material-UI (MUI) 7.1</li>
+                        <li>AWS Cognito Identity JS</li>
+                        <li>Recharts 3.3 (Data visualization)</li>
+                        <li>React-PDF 10.2</li>
+                        <li>React-Player 3.4</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Key Features</h3>
+                    <ul class="card-features">
+                        <li>Job creation wizard</li>
+                        <li>Real-time status dashboard</li>
+                        <li>Document/video preview</li>
+                        <li>Classification policy editor</li>
+                        <li>Human review interface</li>
+                        <li>Metrics visualization</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 32px;">Application Routes</h3>
+            <table class="content-table">
+                <thead>
+                    <tr>
+                        <th>Route</th>
+                        <th>Component</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>/create</code></td><td>Home</td><td>Job creation page</td></tr>
+                    <tr><td><code>/jobs</code></td><td>JobList</td><td>Job listing with filters</td></tr>
+                    <tr><td><code>/jobs/:jobId</code></td><td>JobDetails</td><td>Job details and results</td></tr>
+                    <tr><td><code>/classification</code></td><td>Dashboard</td><td>Classification metrics</td></tr>
+                    <tr><td><code>/classification/policies</code></td><td>PolicyList</td><td>Manage policies</td></tr>
+                    <tr><td><code>/classification/reviews</code></td><td>HumanReview</td><td>Review queue</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Orchestration Component -->
+        <section id="orchestration" style="margin-top: 60px;">
+            <h2>Orchestration Layer (self-service-imaging-app)</h2>
+            <p style="margin-bottom: 24px; color: var(--text-secondary);">
+                AWS CDK-based infrastructure providing API Gateway, Step Functions orchestration, and service coordination.
+            </p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>AWS Services</h3>
+                    <ul class="card-features">
+                        <li>API Gateway (REST, Private)</li>
+                        <li>Lambda (Node.js 20)</li>
+                        <li>Step Functions (Standard)</li>
+                        <li>DynamoDB (On-demand)</li>
+                        <li>S3 (Landing bucket)</li>
+                        <li>SNS/SQS (Messaging)</li>
+                        <li>Cognito (Auth)</li>
+                        <li>Secrets Manager</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Lambda Functions</h3>
+                    <ul class="card-features">
+                        <li><strong>API:</strong> RequestUpload, StartProcessing, GetJobStatus, GetOutput</li>
+                        <li><strong>Event:</strong> ProcessCIPOutput, ProcessVPEOutput, RawInboundProcessing</li>
+                        <li><strong>Tasks:</strong> StartCipTask, StartVpeTask, MergePdf, GenerateXml, FrsTransfer</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 32px;">API Endpoints</h3>
+            <table class="content-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Endpoint</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>GET</td><td><code>/api/v1/requestUpload</code></td><td>Get presigned S3 URL</td></tr>
+                    <tr><td>GET</td><td><code>/api/v1/jobs</code></td><td>List jobs (paginated)</td></tr>
+                    <tr><td>GET</td><td><code>/api/v1/jobs/{jobId}</code></td><td>Get job details</td></tr>
+                    <tr><td>POST</td><td><code>/api/v1/jobs/{jobId}/startProcessing</code></td><td>Start processing</td></tr>
+                    <tr><td>GET</td><td><code>/api/v1/jobs/{jobId}/status</code></td><td>Get job status</td></tr>
+                    <tr><td>GET</td><td><code>/api/v1/jobs/{jobId}/audit</code></td><td>Get audit file</td></tr>
+                    <tr><td>GET/POST</td><td><code>/api/v1/classification-policies</code></td><td>Manage policies</td></tr>
+                    <tr><td>GET</td><td><code>/api/v1/human-review</code></td><td>Human review queue</td></tr>
+                    <tr><td>POST</td><td><code>/api/v1/login</code></td><td>Cognito authentication</td></tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 32px;">DynamoDB Schema</h3>
+            <div class="alert alert-info">
+                <strong>Single-Table Design:</strong> All data stored in one table with composite keys.
+            </div>
+            <table class="content-table">
+                <thead>
+                    <tr>
+                        <th>Entity</th>
+                        <th>PK</th>
+                        <th>SK</th>
+                        <th>Attributes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Job</td><td><code>JOB#{jobId}</code></td><td><code>METADATA</code></td><td>status, options, cipJobId, vpeJobId</td></tr>
+                    <tr><td>File</td><td><code>JOB#{jobId}</code></td><td><code>FILE#{fileId}</code></td><td>s3Key, status, results</td></tr>
+                    <tr><td>Policy</td><td><code>POLICY#{policyId}</code></td><td><code>METADATA</code></td><td>name, rules, version</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- CIP Component -->
+        <section id="cip" style="margin-top: 60px;">
+            <h2>Document AI (textract-imaging-service)</h2>
+            <p style="margin-bottom: 24px; color: var(--text-secondary);">
+                Core Content Imaging Platform for document processing using AWS Textract, Comprehend, SageMaker, and Bedrock.
+            </p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>AI/ML Services</h3>
+                    <ul class="card-features">
+                        <li><strong>Textract:</strong> OCR, Forms, Tables, Queries</li>
+                        <li><strong>Comprehend:</strong> PII detection, Entity recognition</li>
+                        <li><strong>Bedrock:</strong> Claude for classification</li>
+                        <li><strong>SageMaker:</strong> Custom ML models</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Processing Capabilities</h3>
+                    <ul class="card-features">
+                        <li>Document text extraction (OCR)</li>
+                        <li>Key-value pair extraction</li>
+                        <li>Table structure recognition</li>
+                        <li>PII detection & redaction</li>
+                        <li>Document classification</li>
+                        <li>Searchable PDF generation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 32px;">Lambda Functions</h3>
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('cip-api')">API Handlers</button>
+                <button class="tab" onclick="showTab('cip-event')">Event Processors</button>
+                <button class="tab" onclick="showTab('cip-tasks')">State Machine Tasks</button>
+            </div>
+
+            <div id="cip-api" class="tab-content active">
+                <table class="content-table">
+                    <thead><tr><th>Function</th><th>Trigger</th><th>Purpose</th></tr></thead>
+                    <tbody>
+                        <tr><td>uploadJob</td><td>API Gateway</td><td>Initiate job, return presigned URL</td></tr>
+                        <tr><td>getJobStatus</td><td>API Gateway</td><td>Return job state</td></tr>
+                        <tr><td>classificationPolicyManagement</td><td>API Gateway</td><td>CRUD policy operations</td></tr>
+                        <tr><td>classificationReview</td><td>API Gateway</td><td>Human review interface</td></tr>
+                        <tr><td>getRedactionJson</td><td>API Gateway</td><td>Return redaction coordinates</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="cip-event" class="tab-content">
+                <table class="content-table">
+                    <thead><tr><th>Function</th><th>Trigger</th><th>Purpose</th></tr></thead>
+                    <tbody>
+                        <tr><td>startTextract</td><td>SQS</td><td>Submit documents to Textract</td></tr>
+                        <tr><td>decompress</td><td>S3 Event</td><td>Extract ZIP archives</td></tr>
+                        <tr><td>forwardJob</td><td>SQS</td><td>Route to processing</td></tr>
+                        <tr><td>resumeStepFunctions</td><td>SQS</td><td>Resume after async ops</td></tr>
+                        <tr><td>knowledgeBaseUpdate</td><td>DDB Stream</td><td>Update KB with results</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="cip-tasks" class="tab-content">
+                <table class="content-table">
+                    <thead><tr><th>Function</th><th>Purpose</th></tr></thead>
+                    <tbody>
+                        <tr><td>classifyDocument</td><td>Apply classification rules</td></tr>
+                        <tr><td>redactFromComprehendOutput</td><td>Apply PII redaction</td></tr>
+                        <tr><td>sagemakerClassifyDocument</td><td>ML inference</td></tr>
+                        <tr><td>compileJsonFiles</td><td>Aggregate results</td></tr>
+                        <tr><td>triggerSagemakerTraining</td><td>Start model training</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- VPE Component -->
+        <section id="vpe" style="margin-top: 60px;">
+            <h2>Video AI (video-processing-enrichment)</h2>
+            <p style="margin-bottom: 24px; color: var(--text-secondary);">
+                Video analysis and enrichment service using AWS Rekognition, Transcribe, Translate, and Bedrock.
+            </p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>AI/ML Services</h3>
+                    <ul class="card-features">
+                        <li><strong>Rekognition:</strong> Labels, Faces, Celebrities, Moderation, Text</li>
+                        <li><strong>Transcribe:</strong> Speech-to-text, Speaker ID</li>
+                        <li><strong>Translate:</strong> Multi-language translation</li>
+                        <li><strong>Bedrock:</strong> Claude for summaries</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Processing Capabilities</h3>
+                    <ul class="card-features">
+                        <li>Video transcription</li>
+                        <li>Subtitle generation (SRT/VTT)</li>
+                        <li>Multi-language translation</li>
+                        <li>Object/scene detection</li>
+                        <li>Face detection & clustering</li>
+                        <li>Content moderation</li>
+                        <li>AI-powered summaries</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 32px;">Lambda Functions (22+)</h3>
+            <table class="content-table">
+                <thead><tr><th>Function</th><th>Trigger</th><th>Purpose</th></tr></thead>
+                <tbody>
+                    <tr><td>receiveUpload</td><td>S3 Event</td><td>Process uploaded video</td></tr>
+                    <tr><td>startTranscribe</td><td>Step Functions</td><td>Initiate transcription</td></tr>
+                    <tr><td>transcribeCompletionHandler</td><td>SNS</td><td>Process transcript results</td></tr>
+                    <tr><td>translateTranscript</td><td>Step Functions</td><td>Translate to languages</td></tr>
+                    <tr><td>analyzeVideoWithRekognition</td><td>Step Functions</td><td>Start video analysis</td></tr>
+                    <tr><td>detectLabels</td><td>Step Functions</td><td>Object/scene detection</td></tr>
+                    <tr><td>detectFaces</td><td>Step Functions</td><td>Face detection + indexing</td></tr>
+                    <tr><td>moderateContent</td><td>Step Functions</td><td>Content moderation</td></tr>
+                    <tr><td>generateSummary</td><td>Step Functions</td><td>Bedrock summary generation</td></tr>
+                    <tr><td>compileJob</td><td>Step Functions</td><td>Final output compilation</td></tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 32px;">DynamoDB Tables</h3>
+            <table class="content-table">
+                <thead><tr><th>Table</th><th>PK</th><th>SK</th><th>Purpose</th></tr></thead>
+                <tbody>
+                    <tr><td>Job Table</td><td><code>ID</code></td><td>-</td><td>Job and Transaction tracking</td></tr>
+                    <tr><td>Face Metadata</td><td><code>FACE_ID</code></td><td><code>TIMESTAMP</code></td><td>Face detection results</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Cross-Cutting -->
+        <section style="margin-top: 60px;">
+            <h2>Cross-Cutting Concerns</h2>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Authentication</h3>
+                    <ul class="card-features">
+                        <li>AWS Cognito User Pools</li>
+                        <li>JWT token validation</li>
+                        <li>API Key for service-to-service</li>
+                        <li>IAM roles for cross-account</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Error Handling</h3>
+                    <ul class="card-features">
+                        <li>SQS Dead Letter Queues</li>
+                        <li>Step Functions error states</li>
+                        <li>SNS error notifications</li>
+                        <li>Retry with backoff</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Monitoring</h3>
+                    <ul class="card-features">
+                        <li>CloudWatch Logs</li>
+                        <li>CloudWatch Metrics</li>
+                        <li>X-Ray tracing</li>
+                        <li>Custom dashboards</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Security</h3>
+                    <ul class="card-features">
+                        <li>S3 encryption at rest</li>
+                        <li>KMS for sensitive data</li>
+                        <li>VPC endpoints</li>
+                        <li>WAF protection</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

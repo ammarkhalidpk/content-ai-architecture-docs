@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integration Patterns - Content AI Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>Content AI Platform</h2>
+            <p>Architecture Documentation</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="architecture.html">Architecture Diagram</a></li>
+            <li><a href="data-flows.html">Data Flows</a></li>
+            <li><a href="components.html">Components</a></li>
+            <li><a href="integration.html" class="active">Integration Patterns</a></li>
+            <li><a href="cost-analysis.html">Cost Analysis</a></li>
+            <li><a href="calculator.html" class="highlight">Cost Calculator</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Last Updated: February 2026</p>
+        </div>
+    </nav>
+
+    <main class="content">
+        <header class="page-header">
+            <h1>Integration Patterns</h1>
+            <p class="subtitle">Service communication, error handling, and implementation patterns</p>
+        </header>
+
+        <!-- Pattern Navigation -->
+        <section class="entry-point-cards" style="margin-bottom: 40px;">
+            <a href="#messaging" class="entry-card" style="text-decoration: none;">
+                <h4>Messaging</h4>
+                <p>SNS/SQS Patterns</p>
+            </a>
+            <a href="#orchestration" class="entry-card" style="text-decoration: none;">
+                <h4>Orchestration</h4>
+                <p>Step Functions</p>
+            </a>
+            <a href="#error-handling" class="entry-card" style="text-decoration: none;">
+                <h4>Error Handling</h4>
+                <p>Retry & DLQ</p>
+            </a>
+            <a href="#authentication" class="entry-card" style="text-decoration: none;">
+                <h4>Authentication</h4>
+                <p>Cognito & IAM</p>
+            </a>
+        </section>
+
+        <!-- Messaging Patterns -->
+        <section id="messaging">
+            <h2>Messaging Patterns</h2>
+
+            <h3 style="margin-top: 24px;">SNS/SQS Fanout Pattern</h3>
+            <p style="margin-bottom: 16px;">Services publish to SNS topics, multiple consumers subscribe via SQS queues.</p>
+
+            <div class="mermaid">
+flowchart LR
+    subgraph Producer
+        CIP[CIP Service]
+        VPE[VPE Service]
+    end
+
+    subgraph SNS["SNS Topics"]
+        CIPTopic[CIP Output Topic]
+        VPETopic[VPE Output Topic]
+    end
+
+    subgraph Consumers["SQS Queues"]
+        OrchQ[Orchestration Queue]
+        ReviewQ[Human Review Queue]
+        AuditQ[Audit Queue]
+    end
+
+    CIP --> CIPTopic
+    VPE --> VPETopic
+    CIPTopic --> OrchQ
+    CIPTopic --> ReviewQ
+    CIPTopic --> AuditQ
+    VPETopic --> OrchQ
+            </div>
+
+            <div class="card" style="margin-top: 24px;">
+                <h4>Message Filtering</h4>
+                <p>SQS subscriptions use filter policies to receive only relevant messages:</p>
+                <pre><code>{
+    "notificationType": ["JOB_COMPLETED"],
+    "requiresReview": ["true"]
+}</code></pre>
+            </div>
+
+            <h3 style="margin-top: 32px;">Event-Driven Processing</h3>
+            <table class="content-table">
+                <thead>
+                    <tr>
+                        <th>Event Source</th>
+                        <th>Trigger</th>
+                        <th>Consumer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>S3 Object Created</td><td><code>s3:ObjectCreated:*</code></td><td>Lambda (Raw Processing)</td></tr>
+                    <tr><td>DynamoDB Stream</td><td><code>REMOVE</code> events</td><td>Lambda (Cleanup)</td></tr>
+                    <tr><td>EventBridge</td><td>Textract Job Complete</td><td>Lambda (Textract Handler)</td></tr>
+                    <tr><td>SNS</td><td>Rekognition Complete</td><td>Lambda (Rekognition Handler)</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Orchestration Patterns -->
+        <section id="orchestration" style="margin-top: 60px;">
+            <h2>Step Functions Orchestration</h2>
+
+            <h3 style="margin-top: 24px;">Task Token Callback Pattern</h3>
+            <p style="margin-bottom: 16px;">Long-running async operations use task tokens for callback.</p>
+
+            <div class="mermaid">
+sequenceDiagram
+    participant SFN as Step Functions
+    participant Lambda as Start Task Lambda
+    participant CIP as CIP Service
+    participant SNS as SNS Topic
+    participant SQS as SQS Queue
+    participant Callback as Callback Lambda
+
+    SFN->>Lambda: 1. Invoke with Task Token
+    Lambda->>CIP: 2. Start CIP Processing
+    Lambda-->>SFN: 3. Return (Task Waits)
+
+    Note over CIP: Processing (async)
+
+    CIP->>SNS: 4. Publish Completion
+    SNS->>SQS: 5. Queue Message
+    SQS->>Callback: 6. Trigger Handler
+    Callback->>SFN: 7. SendTaskSuccess(taskToken)
+    SFN->>SFN: 8. Continue Workflow
+            </div>
+
+            <h3 style="margin-top: 32px;">Parallel Execution Pattern</h3>
+            <div class="mermaid">
+flowchart TB
+    Start[Start] --> Parallel
+    subgraph Parallel["Parallel Execution"]
+        direction TB
+        CIP[CIP Processing]
+        VPE[VPE Processing]
+    end
+    Parallel --> Merge[Compile Results]
+    Merge --> PostProcess[Post-Processing]
+    PostProcess --> Complete[Complete Job]
+            </div>
+
+            <h3 style="margin-top: 32px;">State Machine Configuration</h3>
+            <pre><code>{
+    "Type": "Task",
+    "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+    "Parameters": {
+        "FunctionName": "StartCipTaskLambda",
+        "Payload": {
+            "jobId.$": "$.jobId",
+            "taskToken.$": "$$.Task.Token"
+        }
+    },
+    "Retry": [{
+        "ErrorEquals": ["Lambda.ServiceException"],
+        "IntervalSeconds": 2,
+        "MaxAttempts": 3,
+        "BackoffRate": 2.0
+    }],
+    "TimeoutSeconds": 86400
+}</code></pre>
+        </section>
+
+        <!-- Error Handling -->
+        <section id="error-handling" style="margin-top: 60px;">
+            <h2>Error Handling Patterns</h2>
+
+            <h3 style="margin-top: 24px;">SQS Retry with Dead Letter Queue</h3>
+            <div class="mermaid">
+flowchart LR
+    Producer[Producer] --> MainQ[Main Queue]
+    MainQ --> Lambda[Lambda Consumer]
+    Lambda -->|Success| Complete[Complete]
+    Lambda -->|Failure| MainQ
+    MainQ -->|Max Retries| DLQ[Dead Letter Queue]
+    DLQ --> Alert[CloudWatch Alarm]
+    Alert --> SNS[SNS Notification]
+            </div>
+
+            <div class="card-grid" style="margin-top: 24px;">
+                <div class="card">
+                    <h4>SQS Configuration</h4>
+                    <pre style="font-size: 12px;"><code>visibilityTimeout: 1350s (1.5x Lambda timeout)
+maxReceiveCount: 3
+deadLetterQueue: {queueName}-dlq</code></pre>
+                </div>
+
+                <div class="card">
+                    <h4>Lambda Retry</h4>
+                    <pre style="font-size: 12px;"><code>maxRetryAttempts: 2
+eventSourceMapping:
+  batchSize: 10
+  maximumBatchingWindow: 30s</code></pre>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 32px;">Step Functions Error Handling</h3>
+            <pre><code>"Catch": [{
+    "ErrorEquals": ["States.ALL"],
+    "ResultPath": "$.error",
+    "Next": "UpdateJobStatusOnError"
+}],
+"Retry": [{
+    "ErrorEquals": ["Lambda.TooManyRequestsException"],
+    "IntervalSeconds": 1,
+    "MaxAttempts": 3,
+    "BackoffRate": 2.0
+}]</code></pre>
+
+            <h3 style="margin-top: 32px;">Error Flow</h3>
+            <div class="mermaid">
+flowchart TB
+    Task[Processing Task] -->|Error| Catch[Catch Block]
+    Catch --> UpdateError[Update Job Status]
+    UpdateError --> GenerateErr[Generate Error File]
+    GenerateErr --> NotifySNS[SNS Notification]
+    NotifySNS --> End[End State]
+            </div>
+        </section>
+
+        <!-- Authentication -->
+        <section id="authentication" style="margin-top: 60px;">
+            <h2>Authentication Patterns</h2>
+
+            <h3 style="margin-top: 24px;">Cognito JWT Flow</h3>
+            <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant UI as React UI
+    participant Cognito as AWS Cognito
+    participant APIGW as API Gateway
+    participant Lambda
+
+    User->>UI: 1. Login
+    UI->>Cognito: 2. InitiateAuth
+    Cognito-->>UI: 3. JWT Token
+    UI->>UI: 4. Store Token
+
+    User->>UI: 5. API Request
+    UI->>APIGW: 6. Request + Bearer Token
+    APIGW->>Cognito: 7. Validate JWT
+    Cognito-->>APIGW: 8. Valid
+    APIGW->>Lambda: 9. Invoke
+    Lambda-->>APIGW: 10. Response
+    APIGW-->>UI: 11. Response
+            </div>
+
+            <h3 style="margin-top: 32px;">Authentication Methods</h3>
+            <table class="content-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Use Case</th>
+                        <th>Header</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cognito JWT</td>
+                        <td>Frontend users</td>
+                        <td><code>Authorization: Bearer {token}</code></td>
+                    </tr>
+                    <tr>
+                        <td>API Key</td>
+                        <td>Service-to-service</td>
+                        <td><code>x-api-key: {key}</code></td>
+                    </tr>
+                    <tr>
+                        <td>IAM Role</td>
+                        <td>Cross-account access</td>
+                        <td>SigV4 signing</td>
+                    </tr>
+                    <tr>
+                        <td>Presigned URL</td>
+                        <td>S3 direct upload</td>
+                        <td>URL parameters</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 32px;">Cross-Account IAM</h3>
+            <pre><code>{
+    "Version": "2012-10-17",
+    "Statement": [{
+        "Effect": "Allow",
+        "Principal": {
+            "AWS": "arn:aws:iam::ACCOUNT_ID:role/OrchestrationRole"
+        },
+        "Action": [
+            "sqs:SendMessage",
+            "sqs:GetQueueAttributes"
+        ],
+        "Resource": "arn:aws:sqs:ap-southeast-2:*:cip-*"
+    }]
+}</code></pre>
+        </section>
+
+        <!-- Best Practices -->
+        <section style="margin-top: 60px;">
+            <h2>Best Practices</h2>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Idempotency</h3>
+                    <ul class="card-features">
+                        <li>Store message IDs in DynamoDB</li>
+                        <li>Use conditional writes</li>
+                        <li>Design for at-least-once delivery</li>
+                        <li>Use unique job IDs for deduplication</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Observability</h3>
+                    <ul class="card-features">
+                        <li>Structured JSON logging</li>
+                        <li>Correlation IDs across services</li>
+                        <li>X-Ray tracing enabled</li>
+                        <li>Custom CloudWatch metrics</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Performance</h3>
+                    <ul class="card-features">
+                        <li>Lambda Provisioned Concurrency</li>
+                        <li>SQS batch processing</li>
+                        <li>DynamoDB auto-scaling</li>
+                        <li>S3 Transfer Acceleration</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Security</h3>
+                    <ul class="card-features">
+                        <li>Least privilege IAM policies</li>
+                        <li>Secrets in Secrets Manager</li>
+                        <li>VPC endpoints for AWS services</li>
+                        <li>WAF rules on API Gateway</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section style="margin-top: 60px;">
+            <h2>Troubleshooting Guide</h2>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('ts-common')">Common Issues</button>
+                <button class="tab" onclick="showTab('ts-queries')">CloudWatch Queries</button>
+                <button class="tab" onclick="showTab('ts-checklist')">Debug Checklist</button>
+            </div>
+
+            <div id="ts-common" class="tab-content active">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Issue</th>
+                            <th>Possible Cause</th>
+                            <th>Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Job stuck in PROCESSING</td>
+                            <td>Task token not returned</td>
+                            <td>Check CIP/VPE SNS publication, verify SQS subscription</td>
+                        </tr>
+                        <tr>
+                            <td>401 Unauthorized</td>
+                            <td>Expired JWT token</td>
+                            <td>Refresh token, check Cognito token expiry</td>
+                        </tr>
+                        <tr>
+                            <td>Textract timeout</td>
+                            <td>Large/complex document</td>
+                            <td>Use async API, increase timeout</td>
+                        </tr>
+                        <tr>
+                            <td>Missing results</td>
+                            <td>S3 lifecycle policy</td>
+                            <td>Check object expiration, verify bucket policy</td>
+                        </tr>
+                        <tr>
+                            <td>DLQ messages</td>
+                            <td>Lambda errors</td>
+                            <td>Check CloudWatch Logs, fix handler code</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="ts-queries" class="tab-content">
+                <h4>Job Status Query</h4>
+                <pre><code>fields @timestamp, @message
+| filter @message like /jobId/
+| filter @message like /ERROR/ or @message like /WARN/
+| sort @timestamp desc
+| limit 100</code></pre>
+
+                <h4 style="margin-top: 24px;">Lambda Errors</h4>
+                <pre><code>fields @timestamp, @message, @logStream
+| filter @message like /Error/ or @message like /Exception/
+| stats count() by bin(1h)
+| sort @timestamp desc</code></pre>
+
+                <h4 style="margin-top: 24px;">Step Functions Failures</h4>
+                <pre><code>fields @timestamp, execution_arn, error, cause
+| filter ispresent(error)
+| sort @timestamp desc
+| limit 50</code></pre>
+            </div>
+
+            <div id="ts-checklist" class="tab-content">
+                <ol style="line-height: 2;">
+                    <li>Check CloudWatch Logs for the specific Lambda function</li>
+                    <li>Verify Step Functions execution status in console</li>
+                    <li>Check SQS queue metrics (messages in flight, DLQ depth)</li>
+                    <li>Verify SNS topic subscriptions are active</li>
+                    <li>Check DynamoDB item for job status and error details</li>
+                    <li>Verify S3 objects exist and have correct permissions</li>
+                    <li>Check IAM role permissions for cross-service calls</li>
+                    <li>Verify API Gateway request/response in access logs</li>
+                    <li>Check X-Ray traces for latency bottlenecks</li>
+                    <li>Review CloudWatch Alarms for triggered alerts</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

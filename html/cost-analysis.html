@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Analysis - Content AI Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>Content AI Platform</h2>
+            <p>Architecture Documentation</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="architecture.html">Architecture Diagram</a></li>
+            <li><a href="data-flows.html">Data Flows</a></li>
+            <li><a href="components.html">Components</a></li>
+            <li><a href="integration.html">Integration Patterns</a></li>
+            <li><a href="cost-analysis.html" class="active">Cost Analysis</a></li>
+            <li><a href="calculator.html" class="highlight">Cost Calculator</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Last Updated: February 2026</p>
+        </div>
+    </nav>
+
+    <main class="content">
+        <header class="page-header">
+            <h1>Cost Analysis</h1>
+            <p class="subtitle">Comprehensive AWS service pricing and volume-based estimates</p>
+        </header>
+
+        <div class="cta-box" style="margin-bottom: 40px;">
+            <p><strong>Interactive Calculator Available!</strong> Get precise estimates for your specific workload.</p>
+            <a href="calculator.html" class="btn btn-primary">Launch Cost Calculator</a>
+        </div>
+
+        <!-- Executive Summary -->
+        <section>
+            <h2>Executive Summary</h2>
+            <p style="margin-bottom: 24px;">Monthly cost estimates for the Content AI Platform based on volume (ap-southeast-2 region).</p>
+
+            <table class="cost-table">
+                <thead>
+                    <tr>
+                        <th>Monthly Volume</th>
+                        <th>Documents Only</th>
+                        <th>Videos Only</th>
+                        <th>Mixed (70% Doc / 30% Video)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>10,000</strong></td>
+                        <td>$200 - $2,700</td>
+                        <td>$6,300 - $21,200</td>
+                        <td>$2,000 - $8,200</td>
+                    </tr>
+                    <tr>
+                        <td><strong>100,000</strong></td>
+                        <td>$1,800 - $27,000</td>
+                        <td>$63,000 - $212,000</td>
+                        <td>$20,000 - $82,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>500,000</strong></td>
+                        <td>$8,500 - $124,000</td>
+                        <td>$316,000 - $1M</td>
+                        <td>$100,000 - $400,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>1,000,000</strong></td>
+                        <td>$16,000 - $238,000</td>
+                        <td>$633,000 - $2.1M</td>
+                        <td>$200,000 - $800,000</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-warning" style="margin-top: 24px;">
+                <strong>Note:</strong> Cost ranges reflect variations in feature usage. Lower estimates assume basic processing (OCR + PII),
+                higher estimates include full features (Forms extraction, multiple Rekognition analyses, translations).
+            </div>
+        </section>
+
+        <!-- Service Pricing -->
+        <section>
+            <h2>AWS Service Pricing</h2>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('cip-services')">Document Services (CIP)</button>
+                <button class="tab" onclick="showTab('vpe-services')">Video Services (VPE)</button>
+                <button class="tab" onclick="showTab('infra-services')">Infrastructure</button>
+            </div>
+
+            <div id="cip-services" class="tab-content active">
+                <h3 style="margin: 24px 0 16px;">Textract Pricing</h3>
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>API</th>
+                            <th>First 1M Pages</th>
+                            <th>After 1M Pages</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Detect Document Text (OCR)</td>
+                            <td>$0.0015/page</td>
+                            <td>$0.0006/page</td>
+                            <td>Basic text extraction</td>
+                        </tr>
+                        <tr>
+                            <td>Analyze Document (Forms)</td>
+                            <td>$0.050/page</td>
+                            <td>$0.040/page</td>
+                            <td>Key-value pair extraction</td>
+                        </tr>
+                        <tr>
+                            <td>Analyze Document (Tables)</td>
+                            <td>$0.015/page</td>
+                            <td>$0.010/page</td>
+                            <td>Table structure extraction</td>
+                        </tr>
+                        <tr>
+                            <td>Analyze Document (Queries)</td>
+                            <td>$0.015/page</td>
+                            <td>$0.015/page</td>
+                            <td>Targeted data extraction</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 style="margin: 24px 0 16px;">Comprehend & Bedrock Pricing</h3>
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Pricing Unit</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Comprehend - PII Detection</td>
+                            <td>Per 100 characters</td>
+                            <td>$0.0001</td>
+                        </tr>
+                        <tr>
+                            <td>Bedrock - Claude 3.5 Sonnet (Input)</td>
+                            <td>Per 1K tokens</td>
+                            <td>$0.003</td>
+                        </tr>
+                        <tr>
+                            <td>Bedrock - Claude 3.5 Sonnet (Output)</td>
+                            <td>Per 1K tokens</td>
+                            <td>$0.015</td>
+                        </tr>
+                        <tr>
+                            <td>Bedrock - Claude Haiku (Input)</td>
+                            <td>Per 1K tokens</td>
+                            <td>$0.00025</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="vpe-services" class="tab-content">
+                <h3 style="margin: 24px 0 16px;">Rekognition Video Pricing</h3>
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Price per Minute</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Label Detection</td>
+                            <td>$0.10</td>
+                            <td>Objects, scenes, activities</td>
+                        </tr>
+                        <tr>
+                            <td>Face Detection</td>
+                            <td>$0.10</td>
+                            <td>Face attributes, indexing</td>
+                        </tr>
+                        <tr>
+                            <td>Celebrity Recognition</td>
+                            <td>$0.10</td>
+                            <td>Celebrity identification</td>
+                        </tr>
+                        <tr>
+                            <td>Content Moderation</td>
+                            <td>$0.10</td>
+                            <td>Inappropriate content</td>
+                        </tr>
+                        <tr>
+                            <td>Text Detection</td>
+                            <td>$0.10</td>
+                            <td>OCR in video</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="alert alert-info" style="margin-top: 16px;">
+                    Each feature is charged separately. Running 3 features on a 5-minute video = 15 billed minutes.
+                </div>
+
+                <h3 style="margin: 24px 0 16px;">Transcribe & Translate Pricing</h3>
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Pricing Unit</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Transcribe - Standard</td>
+                            <td>Per minute</td>
+                            <td>$0.024</td>
+                        </tr>
+                        <tr>
+                            <td>Transcribe - Call Analytics</td>
+                            <td>Per minute</td>
+                            <td>$0.075</td>
+                        </tr>
+                        <tr>
+                            <td>Translate - Standard</td>
+                            <td>Per million characters</td>
+                            <td>$15.00</td>
+                        </tr>
+                        <tr>
+                            <td>Translate - Active Custom</td>
+                            <td>Per million characters</td>
+                            <td>$60.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="infra-services" class="tab-content">
+                <h3 style="margin: 24px 0 16px;">Infrastructure Pricing</h3>
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Pricing Unit</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Lambda - Requests</td>
+                            <td>Per 1M requests</td>
+                            <td>$0.20</td>
+                        </tr>
+                        <tr>
+                            <td>Lambda - Compute</td>
+                            <td>Per GB-second</td>
+                            <td>$0.0000166667</td>
+                        </tr>
+                        <tr>
+                            <td>Step Functions - Standard</td>
+                            <td>Per 1K state transitions</td>
+                            <td>$0.025</td>
+                        </tr>
+                        <tr>
+                            <td>Step Functions - Express</td>
+                            <td>Per 1M requests</td>
+                            <td>$1.00</td>
+                        </tr>
+                        <tr>
+                            <td>API Gateway - REST</td>
+                            <td>Per 1M requests</td>
+                            <td>$3.50</td>
+                        </tr>
+                        <tr>
+                            <td>DynamoDB - Write (On-demand)</td>
+                            <td>Per 1M write units</td>
+                            <td>$1.25</td>
+                        </tr>
+                        <tr>
+                            <td>DynamoDB - Read (On-demand)</td>
+                            <td>Per 1M read units</td>
+                            <td>$0.25</td>
+                        </tr>
+                        <tr>
+                            <td>S3 - Standard Storage</td>
+                            <td>Per GB/month</td>
+                            <td>$0.023</td>
+                        </tr>
+                        <tr>
+                            <td>S3 - PUT Requests</td>
+                            <td>Per 1K requests</td>
+                            <td>$0.005</td>
+                        </tr>
+                        <tr>
+                            <td>SNS - Publishes</td>
+                            <td>Per 1M messages</td>
+                            <td>$0.50</td>
+                        </tr>
+                        <tr>
+                            <td>SQS - Requests</td>
+                            <td>Per 1M requests</td>
+                            <td>$0.40</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Entry Point Comparison -->
+        <section>
+            <h2>Entry Point Cost Comparison</h2>
+            <p style="margin-bottom: 24px;">Infrastructure overhead varies by entry point (AI/ML costs remain the same).</p>
+
+            <table class="content-table">
+                <thead>
+                    <tr>
+                        <th>Entry Point</th>
+                        <th>Infrastructure Overhead</th>
+                        <th>Per-Item Impact</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Frontend + Orchestration</strong></td>
+                        <td>Full stack (API GW + Step Functions + Cognito)</td>
+                        <td>+$0.0005 - $0.001</td>
+                        <td>Interactive workflows, human review</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Self-Service API</strong></td>
+                        <td>API GW + Step Functions</td>
+                        <td>+$0.0004 - $0.0008</td>
+                        <td>System integrations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Direct CIP/VPE API</strong></td>
+                        <td>API GW only</td>
+                        <td>Base cost</td>
+                        <td>Simple, single-service processing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>S3 Direct Upload</strong></td>
+                        <td>S3 events only</td>
+                        <td>-$0.0002</td>
+                        <td>High-volume batch processing</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-success" style="margin-top: 24px;">
+                <strong>Key Insight:</strong> Infrastructure costs are typically &lt;1% of total costs for AI/ML-heavy workloads.
+                The choice of entry point should be based on functionality needs rather than cost optimization.
+            </div>
+        </section>
+
+        <!-- Cost Optimization -->
+        <section>
+            <h2>Cost Optimization Recommendations</h2>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Feature Selection</h3>
+                    <ul class="card-features">
+                        <li>Use Textract OCR only for simple extraction (90% savings vs Forms)</li>
+                        <li>Run only needed Rekognition features (75% savings)</li>
+                        <li>Use Claude Haiku for simple tasks (92% savings vs Sonnet)</li>
+                        <li>Disable translation if single-language</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Volume Discounts</h3>
+                    <ul class="card-features">
+                        <li>Textract: 20-60% discount after 1M pages</li>
+                        <li>Contact AWS Sales for 500K+ volumes</li>
+                        <li>Reserved capacity for SageMaker (64% savings)</li>
+                        <li>Compute Savings Plans for Lambda</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Architecture Optimization</h3>
+                    <ul class="card-features">
+                        <li>Use Step Functions Express for short workflows</li>
+                        <li>Switch to DynamoDB provisioned at scale</li>
+                        <li>Implement S3 lifecycle policies</li>
+                        <li>Right-size Lambda memory</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Processing Optimization</h3>
+                    <ul class="card-features">
+                        <li>Sample frames for long videos</li>
+                        <li>Batch similar documents together</li>
+                        <li>Cache Bedrock responses for patterns</li>
+                        <li>Use async APIs where possible</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Scenarios -->
+        <section>
+            <h2>Detailed Scenario: 100K Documents/Month</h2>
+
+            <div class="calculator-grid" style="margin-top: 24px;">
+                <div>
+                    <h4>Basic Configuration (OCR + PII)</h4>
+                    <table class="content-table">
+                        <tbody>
+                            <tr>
+                                <td>Textract OCR (500K pages)</td>
+                                <td style="text-align: right;">$750</td>
+                            </tr>
+                            <tr>
+                                <td>Comprehend PII (1B chars)</td>
+                                <td style="text-align: right;">$1,000</td>
+                            </tr>
+                            <tr>
+                                <td>Infrastructure</td>
+                                <td style="text-align: right;">$60</td>
+                            </tr>
+                            <tr style="background: #e0f2fe;">
+                                <td><strong>Total</strong></td>
+                                <td style="text-align: right;"><strong>$1,810</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <h4>Full Configuration (All Features)</h4>
+                    <table class="content-table">
+                        <tbody>
+                            <tr>
+                                <td>Textract OCR (500K pages)</td>
+                                <td style="text-align: right;">$750</td>
+                            </tr>
+                            <tr>
+                                <td>Textract Forms (500K pages)</td>
+                                <td style="text-align: right;">$25,000</td>
+                            </tr>
+                            <tr>
+                                <td>Comprehend PII</td>
+                                <td style="text-align: right;">$1,000</td>
+                            </tr>
+                            <tr>
+                                <td>Bedrock Classification</td>
+                                <td style="text-align: right;">$180</td>
+                            </tr>
+                            <tr>
+                                <td>Infrastructure</td>
+                                <td style="text-align: right;">$60</td>
+                            </tr>
+                            <tr style="background: #e0f2fe;">
+                                <td><strong>Total</strong></td>
+                                <td style="text-align: right;"><strong>$26,990</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Free Tier -->
+        <section>
+            <h2>AWS Free Tier Benefits</h2>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>First 12 Months</h3>
+                    <ul class="card-features">
+                        <li>Lambda: 1M requests, 400K GB-seconds</li>
+                        <li>DynamoDB: 25 GB, 25 RCU/WCU</li>
+                        <li>S3: 5 GB storage</li>
+                        <li>Textract: 100 pages/month per API</li>
+                        <li>Transcribe: 60 minutes/month</li>
+                        <li>Rekognition: 5K images, 60 min video</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Always Free</h3>
+                    <ul class="card-features">
+                        <li>Step Functions: 4,000 transitions/month</li>
+                        <li>SNS: 1M publishes</li>
+                        <li>SQS: 1M requests</li>
+                        <li>CloudWatch: Basic metrics</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-box" style="margin-top: 40px;">
+            <p>Ready to estimate your specific workload costs?</p>
+            <a href="calculator.html" class="btn btn-primary" style="margin-right: 16px;">Launch Cost Calculator</a>
+            <a href="https://aws.amazon.com/pricing/" class="btn btn-secondary" target="_blank">AWS Pricing Page</a>
+        </section>
+    </main>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

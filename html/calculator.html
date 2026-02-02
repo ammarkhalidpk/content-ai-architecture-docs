@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Calculator - Content AI Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>Content AI Platform</h2>
+            <p>Architecture Documentation</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="architecture.html">Architecture Diagram</a></li>
+            <li><a href="data-flows.html">Data Flows</a></li>
+            <li><a href="components.html">Components</a></li>
+            <li><a href="integration.html">Integration Patterns</a></li>
+            <li><a href="cost-analysis.html">Cost Analysis</a></li>
+            <li><a href="calculator.html" class="active highlight">Cost Calculator</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Last Updated: February 2026</p>
+        </div>
+    </nav>
+
+    <main class="content">
+        <header class="page-header">
+            <h1>Real-Time Cost Calculator</h1>
+            <p class="subtitle">Estimate your monthly AWS costs based on volume and features</p>
+        </header>
+
+        <div class="alert alert-info">
+            <strong>Note:</strong> This calculator provides estimates based on AWS published pricing for the ap-southeast-2 (Sydney) region.
+            Actual costs may vary based on specific usage patterns, data transfer, and available discounts.
+        </div>
+
+        <div class="calculator-container">
+            <div class="calculator-grid">
+                <!-- Input Section -->
+                <div class="input-section">
+                    <h3>Configure Your Workload</h3>
+
+                    <!-- Entry Point Selection -->
+                    <div class="form-group">
+                        <label for="entryPoint">Entry Point</label>
+                        <select id="entryPoint" onchange="calculateCosts()">
+                            <option value="frontend">Frontend UI (Full Orchestration)</option>
+                            <option value="api">Self-Service API</option>
+                            <option value="direct">Direct CIP/VPE API</option>
+                            <option value="s3">S3 Direct Upload</option>
+                        </select>
+                        <p class="form-hint">Different entry points have slightly different infrastructure costs</p>
+                    </div>
+
+                    <!-- Document Processing -->
+                    <div class="form-group">
+                        <label>Document Processing (CIP)</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <input type="number" id="documentCount" value="10000" min="0" onchange="calculateCosts()" oninput="calculateCosts()">
+                                <p class="form-hint">Documents per month</p>
+                            </div>
+                            <div>
+                                <input type="number" id="pagesPerDoc" value="5" min="1" max="100" onchange="calculateCosts()" oninput="calculateCosts()">
+                                <p class="form-hint">Avg pages per document</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Document Features</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="textractOcr" checked onchange="calculateCosts()">
+                                <label for="textractOcr">Textract OCR</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="textractForms" onchange="calculateCosts()">
+                                <label for="textractForms">Textract Forms</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="textractTables" onchange="calculateCosts()">
+                                <label for="textractTables">Textract Tables</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="comprehendPii" checked onchange="calculateCosts()">
+                                <label for="comprehendPii">PII Detection</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="bedrockClassification" onchange="calculateCosts()">
+                                <label for="bedrockClassification">AI Classification</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="sagemakerInference" onchange="calculateCosts()">
+                                <label for="sagemakerInference">SageMaker Model</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="margin: 32px 0; border: none; border-top: 2px solid var(--border-color);">
+
+                    <!-- Video Processing -->
+                    <div class="form-group">
+                        <label>Video Processing (VPE)</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <input type="number" id="videoCount" value="0" min="0" onchange="calculateCosts()" oninput="calculateCosts()">
+                                <p class="form-hint">Videos per month</p>
+                            </div>
+                            <div>
+                                <input type="number" id="avgVideoDuration" value="5" min="1" max="120" onchange="calculateCosts()" oninput="calculateCosts()">
+                                <p class="form-hint">Avg duration (minutes)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Video Features</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="transcribe" checked onchange="calculateCosts()">
+                                <label for="transcribe">Transcription</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="rekognitionLabels" checked onchange="calculateCosts()">
+                                <label for="rekognitionLabels">Label Detection</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="rekognitionFaces" onchange="calculateCosts()">
+                                <label for="rekognitionFaces">Face Detection</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="rekognitionCelebs" onchange="calculateCosts()">
+                                <label for="rekognitionCelebs">Celebrity Recognition</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="rekognitionModeration" onchange="calculateCosts()">
+                                <label for="rekognitionModeration">Content Moderation</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="rekognitionText" onchange="calculateCosts()">
+                                <label for="rekognitionText">Text Detection</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="translateLangs">Translation Languages</label>
+                        <select id="translateLangs" onchange="calculateCosts()">
+                            <option value="0">No Translation</option>
+                            <option value="1">1 Additional Language</option>
+                            <option value="2" selected>2 Additional Languages</option>
+                            <option value="3">3 Additional Languages</option>
+                            <option value="5">5 Additional Languages</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="bedrockSummary" checked onchange="calculateCosts()">
+                            <label for="bedrockSummary">Generate AI Summaries (Bedrock)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section">
+                    <h3>Estimated Monthly Cost</h3>
+
+                    <div class="total-cost">
+                        <div class="label">Total Estimated Cost</div>
+                        <div class="amount" id="totalCost">$0.00</div>
+                        <div class="period">per month</div>
+                    </div>
+
+                    <div class="cost-breakdown">
+                        <h4>Document Processing (CIP)</h4>
+                        <div class="breakdown-item">
+                            <span class="service">Textract OCR</span>
+                            <span class="cost" id="costTextractOcr">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">Textract Forms</span>
+                            <span class="cost" id="costTextractForms">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">Textract Tables</span>
+                            <span class="cost" id="costTextractTables">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">Comprehend PII</span>
+                            <span class="cost" id="costComprehend">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">Bedrock Classification</span>
+                            <span class="cost" id="costBedrockClass">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">SageMaker Inference</span>
+                            <span class="cost" id="costSagemaker">$0.00</span>
+                        </div>
+                        <div class="breakdown-item subtotal">
+                            <span class="service"><strong>Document Subtotal</strong></span>
+                            <span class="cost" id="subtotalDoc"><strong>$0.00</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="cost-breakdown">
+                        <h4>Video Processing (VPE)</h4>
+                        <div class="breakdown-item">
+                            <span class="service">Transcribe</span>
+                            <span class="cost" id="costTranscribe">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">Rekognition Video</span>
+                            <span class="cost" id="costRekognition">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">Translate</span>
+                            <span class="cost" id="costTranslate">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">Bedrock Summaries</span>
+                            <span class="cost" id="costBedrockSummary">$0.00</span>
+                        </div>
+                        <div class="breakdown-item subtotal">
+                            <span class="service"><strong>Video Subtotal</strong></span>
+                            <span class="cost" id="subtotalVideo"><strong>$0.00</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="cost-breakdown">
+                        <h4>Infrastructure</h4>
+                        <div class="breakdown-item">
+                            <span class="service">Lambda Compute</span>
+                            <span class="cost" id="costLambda">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">Step Functions</span>
+                            <span class="cost" id="costStepFunctions">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">API Gateway</span>
+                            <span class="cost" id="costApiGateway">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">DynamoDB</span>
+                            <span class="cost" id="costDynamoDB">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">S3 Storage</span>
+                            <span class="cost" id="costS3">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">SNS/SQS Messaging</span>
+                            <span class="cost" id="costMessaging">$0.00</span>
+                        </div>
+                        <div class="breakdown-item subtotal">
+                            <span class="service"><strong>Infrastructure Subtotal</strong></span>
+                            <span class="cost" id="subtotalInfra"><strong>$0.00</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Chart -->
+                    <div class="chart-container">
+                        <h4 style="margin-bottom: 16px;">Cost Distribution</h4>
+                        <div class="chart-bar">
+                            <span class="chart-label">Textract</span>
+                            <div class="chart-value"><div class="chart-fill textract" id="chartTextract" style="width: 0%"></div></div>
+                            <span class="chart-amount" id="chartTextractAmt">$0</span>
+                        </div>
+                        <div class="chart-bar">
+                            <span class="chart-label">Comprehend</span>
+                            <div class="chart-value"><div class="chart-fill comprehend" id="chartComprehend" style="width: 0%"></div></div>
+                            <span class="chart-amount" id="chartComprehendAmt">$0</span>
+                        </div>
+                        <div class="chart-bar">
+                            <span class="chart-label">Rekognition</span>
+                            <div class="chart-value"><div class="chart-fill rekognition" id="chartRekognition" style="width: 0%"></div></div>
+                            <span class="chart-amount" id="chartRekognitionAmt">$0</span>
+                        </div>
+                        <div class="chart-bar">
+                            <span class="chart-label">Transcribe</span>
+                            <div class="chart-value"><div class="chart-fill transcribe" id="chartTranscribe" style="width: 0%"></div></div>
+                            <span class="chart-amount" id="chartTranscribeAmt">$0</span>
+                        </div>
+                        <div class="chart-bar">
+                            <span class="chart-label">Translate</span>
+                            <div class="chart-value"><div class="chart-fill translate" id="chartTranslate" style="width: 0%"></div></div>
+                            <span class="chart-amount" id="chartTranslateAmt">$0</span>
+                        </div>
+                        <div class="chart-bar">
+                            <span class="chart-label">Bedrock</span>
+                            <div class="chart-value"><div class="chart-fill bedrock" id="chartBedrock" style="width: 0%"></div></div>
+                            <span class="chart-amount" id="chartBedrockAmt">$0</span>
+                        </div>
+                        <div class="chart-bar">
+                            <span class="chart-label">Infrastructure</span>
+                            <div class="chart-value"><div class="chart-fill infrastructure" id="chartInfra" style="width: 0%"></div></div>
+                            <span class="chart-amount" id="chartInfraAmt">$0</span>
+                        </div>
+                    </div>
+
+                    <!-- Per-Item Costs -->
+                    <div class="cost-breakdown" style="margin-top: 24px;">
+                        <h4>Per-Item Costs</h4>
+                        <div class="breakdown-item">
+                            <span class="service">Cost per Document</span>
+                            <span class="cost" id="perDocCost">$0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="service">Cost per Video (per minute)</span>
+                            <span class="cost" id="perVideoCost">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing Reference -->
+        <section style="margin-top: 40px;">
+            <h2>AWS Pricing Reference</h2>
+            <p style="margin-bottom: 24px; color: var(--text-secondary);">Prices used in calculations (ap-southeast-2 region)</p>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('doc-pricing')">Document Services</button>
+                <button class="tab" onclick="showTab('video-pricing')">Video Services</button>
+                <button class="tab" onclick="showTab('infra-pricing')">Infrastructure</button>
+            </div>
+
+            <div id="doc-pricing" class="tab-content active">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Pricing Unit</th>
+                            <th>Price (First 1M)</th>
+                            <th>Price (After 1M)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Textract - Detect Text (OCR)</td>
+                            <td>Per page</td>
+                            <td>$0.0015</td>
+                            <td>$0.0006</td>
+                        </tr>
+                        <tr>
+                            <td>Textract - Analyze Forms</td>
+                            <td>Per page</td>
+                            <td>$0.050</td>
+                            <td>$0.040</td>
+                        </tr>
+                        <tr>
+                            <td>Textract - Analyze Tables</td>
+                            <td>Per page</td>
+                            <td>$0.015</td>
+                            <td>$0.010</td>
+                        </tr>
+                        <tr>
+                            <td>Comprehend - PII Detection</td>
+                            <td>Per 100 characters</td>
+                            <td>$0.0001</td>
+                            <td>$0.0001</td>
+                        </tr>
+                        <tr>
+                            <td>Bedrock - Claude 3.5 Sonnet (Input)</td>
+                            <td>Per 1K tokens</td>
+                            <td>$0.003</td>
+                            <td>$0.003</td>
+                        </tr>
+                        <tr>
+                            <td>Bedrock - Claude 3.5 Sonnet (Output)</td>
+                            <td>Per 1K tokens</td>
+                            <td>$0.015</td>
+                            <td>$0.015</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="video-pricing" class="tab-content">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Pricing Unit</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Transcribe - Standard</td>
+                            <td>Per minute</td>
+                            <td>$0.024</td>
+                        </tr>
+                        <tr>
+                            <td>Rekognition - Label Detection</td>
+                            <td>Per minute</td>
+                            <td>$0.10</td>
+                        </tr>
+                        <tr>
+                            <td>Rekognition - Face Detection</td>
+                            <td>Per minute</td>
+                            <td>$0.10</td>
+                        </tr>
+                        <tr>
+                            <td>Rekognition - Celebrity Recognition</td>
+                            <td>Per minute</td>
+                            <td>$0.10</td>
+                        </tr>
+                        <tr>
+                            <td>Rekognition - Content Moderation</td>
+                            <td>Per minute</td>
+                            <td>$0.10</td>
+                        </tr>
+                        <tr>
+                            <td>Rekognition - Text Detection</td>
+                            <td>Per minute</td>
+                            <td>$0.10</td>
+                        </tr>
+                        <tr>
+                            <td>Translate - Standard</td>
+                            <td>Per million characters</td>
+                            <td>$15.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="infra-pricing" class="tab-content">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Pricing Unit</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Lambda - Requests</td>
+                            <td>Per 1M requests</td>
+                            <td>$0.20</td>
+                        </tr>
+                        <tr>
+                            <td>Lambda - Compute</td>
+                            <td>Per GB-second</td>
+                            <td>$0.0000166667</td>
+                        </tr>
+                        <tr>
+                            <td>Step Functions - Standard</td>
+                            <td>Per 1K transitions</td>
+                            <td>$0.025</td>
+                        </tr>
+                        <tr>
+                            <td>API Gateway - REST</td>
+                            <td>Per 1M requests</td>
+                            <td>$3.50</td>
+                        </tr>
+                        <tr>
+                            <td>DynamoDB - Write (On-demand)</td>
+                            <td>Per 1M writes</td>
+                            <td>$1.25</td>
+                        </tr>
+                        <tr>
+                            <td>DynamoDB - Read (On-demand)</td>
+                            <td>Per 1M reads</td>
+                            <td>$0.25</td>
+                        </tr>
+                        <tr>
+                            <td>S3 - Standard Storage</td>
+                            <td>Per GB/month</td>
+                            <td>$0.023</td>
+                        </tr>
+                        <tr>
+                            <td>S3 - PUT Requests</td>
+                            <td>Per 1K requests</td>
+                            <td>$0.005</td>
+                        </tr>
+                        <tr>
+                            <td>SNS - Publishes</td>
+                            <td>Per 1M messages</td>
+                            <td>$0.50</td>
+                        </tr>
+                        <tr>
+                            <td>SQS - Requests</td>
+                            <td>Per 1M requests</td>
+                            <td>$0.40</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // AWS Pricing Constants (ap-southeast-2)
+        const PRICING = {
+            // Textract
+            textractOcr: { first1M: 0.0015, after1M: 0.0006 },
+            textractForms: { first1M: 0.05, after1M: 0.04 },
+            textractTables: { first1M: 0.015, after1M: 0.01 },
+
+            // Comprehend
+            comprehendPii: 0.0001, // per 100 characters
+
+            // Bedrock Claude 3.5 Sonnet
+            bedrockInput: 0.003, // per 1K tokens
+            bedrockOutput: 0.015, // per 1K tokens
+
+            // SageMaker (estimate for ml.m5.large endpoint)
+            sagemakerHourly: 0.115,
+
+            // Rekognition Video
+            rekognitionVideo: 0.10, // per minute per feature
+
+            // Transcribe
+            transcribe: 0.024, // per minute
+
+            // Translate
+            translate: 15.0, // per million characters
+
+            // Infrastructure
+            lambdaRequests: 0.20 / 1000000,
+            lambdaCompute: 0.0000166667, // per GB-second
+            stepFunctions: 0.025 / 1000, // per transition
+            apiGateway: 3.50 / 1000000,
+            dynamoWrite: 1.25 / 1000000,
+            dynamoRead: 0.25 / 1000000,
+            s3Storage: 0.023, // per GB/month
+            s3Put: 0.005 / 1000,
+            snsPublish: 0.50 / 1000000,
+            sqsRequest: 0.40 / 1000000
+        };
+
+        // Calculate costs based on inputs
+        function calculateCosts() {
+            // Get input values
+            const entryPoint = document.getElementById('entryPoint').value;
+            const docCount = parseInt(document.getElementById('documentCount').value) || 0;
+            const pagesPerDoc = parseInt(document.getElementById('pagesPerDoc').value) || 5;
+            const videoCount = parseInt(document.getElementById('videoCount').value) || 0;
+            const videoDuration = parseInt(document.getElementById('avgVideoDuration').value) || 5;
+            const translateLangs = parseInt(document.getElementById('translateLangs').value) || 0;
+
+            // Feature flags - Documents
+            const useTextractOcr = document.getElementById('textractOcr').checked;
+            const useTextractForms = document.getElementById('textractForms').checked;
+            const useTextractTables = document.getElementById('textractTables').checked;
+            const useComprehendPii = document.getElementById('comprehendPii').checked;
+            const useBedrockClass = document.getElementById('bedrockClassification').checked;
+            const useSagemaker = document.getElementById('sagemakerInference').checked;
+
+            // Feature flags - Video
+            const useTranscribe = document.getElementById('transcribe').checked;
+            const useRekLabels = document.getElementById('rekognitionLabels').checked;
+            const useRekFaces = document.getElementById('rekognitionFaces').checked;
+            const useRekCelebs = document.getElementById('rekognitionCelebs').checked;
+            const useRekModeration = document.getElementById('rekognitionModeration').checked;
+            const useRekText = document.getElementById('rekognitionText').checked;
+            const useBedrockSummary = document.getElementById('bedrockSummary').checked;
+
+            // Calculate page count with volume discount
+            const totalPages = docCount * pagesPerDoc;
+
+            // Document Processing Costs
+            let costTextractOcr = 0;
+            let costTextractForms = 0;
+            let costTextractTables = 0;
+            let costComprehend = 0;
+            let costBedrockClass = 0;
+            let costSagemaker = 0;
+
+            if (useTextractOcr) {
+                costTextractOcr = calculateTieredCost(totalPages, PRICING.textractOcr.first1M, PRICING.textractOcr.after1M);
+            }
+
+            if (useTextractForms) {
+                costTextractForms = calculateTieredCost(totalPages, PRICING.textractForms.first1M, PRICING.textractForms.after1M);
+            }
+
+            if (useTextractTables) {
+                costTextractTables = calculateTieredCost(totalPages, PRICING.textractTables.first1M, PRICING.textractTables.after1M);
+            }
+
+            if (useComprehendPii) {
+                // Assume 2000 characters per page
+                const totalChars = totalPages * 2000;
+                const units = totalChars / 100;
+                costComprehend = units * PRICING.comprehendPii;
+            }
+
+            if (useBedrockClass) {
+                // Assume 20% of docs need classification, ~500 tokens input, ~100 tokens output per doc
+                const classifyDocs = docCount * 0.2;
+                const inputTokens = classifyDocs * 500 / 1000;
+                const outputTokens = classifyDocs * 100 / 1000;
+                costBedrockClass = (inputTokens * PRICING.bedrockInput) + (outputTokens * PRICING.bedrockOutput);
+            }
+
+            if (useSagemaker) {
+                // Assume endpoint running 24/7 for inference
+                costSagemaker = PRICING.sagemakerHourly * 24 * 30;
+            }
+
+            // Video Processing Costs
+            const totalVideoMinutes = videoCount * videoDuration;
+            let costTranscribe = 0;
+            let costRekognition = 0;
+            let costTranslate = 0;
+            let costBedrockSummary = 0;
+
+            if (useTranscribe && videoCount > 0) {
+                costTranscribe = totalVideoMinutes * PRICING.transcribe;
+            }
+
+            // Count Rekognition features
+            let rekFeatures = 0;
+            if (useRekLabels) rekFeatures++;
+            if (useRekFaces) rekFeatures++;
+            if (useRekCelebs) rekFeatures++;
+            if (useRekModeration) rekFeatures++;
+            if (useRekText) rekFeatures++;
+
+            if (rekFeatures > 0 && videoCount > 0) {
+                costRekognition = totalVideoMinutes * PRICING.rekognitionVideo * rekFeatures;
+            }
+
+            if (translateLangs > 0 && videoCount > 0) {
+                // Assume ~150 words per minute, ~5 chars per word
+                const charsPerMinute = 150 * 5;
+                const totalChars = totalVideoMinutes * charsPerMinute * translateLangs;
+                costTranslate = (totalChars / 1000000) * PRICING.translate;
+            }
+
+            if (useBedrockSummary && videoCount > 0) {
+                // Assume ~2000 tokens input (transcript), ~500 tokens output per video
+                const inputTokens = videoCount * 2000 / 1000;
+                const outputTokens = videoCount * 500 / 1000;
+                costBedrockSummary = (inputTokens * PRICING.bedrockInput) + (outputTokens * PRICING.bedrockOutput);
+            }
+
+            // Infrastructure Costs
+            const totalItems = docCount + videoCount;
+
+            // Lambda invocations: ~10 per doc, ~20 per video
+            const lambdaInvocations = (docCount * 10) + (videoCount * 20);
+            // Assume 1GB memory, 5 second average duration
+            const lambdaGbSeconds = lambdaInvocations * 1 * 5;
+            const costLambda = (lambdaInvocations * PRICING.lambdaRequests) + (lambdaGbSeconds * PRICING.lambdaCompute);
+
+            // Step Functions: ~15 transitions per doc, ~25 per video
+            let stepTransitions = (docCount * 15) + (videoCount * 25);
+            // Adjust for entry point
+            if (entryPoint === 'direct' || entryPoint === 's3') {
+                stepTransitions = stepTransitions * 0.3; // Reduced orchestration
+            }
+            const costStepFunctions = stepTransitions * PRICING.stepFunctions;
+
+            // API Gateway
+            let apiRequests = totalItems * 5; // ~5 API calls per item
+            if (entryPoint === 's3') {
+                apiRequests = totalItems * 2; // Fewer API calls for S3 direct
+            }
+            const costApiGateway = apiRequests * PRICING.apiGateway;
+
+            // DynamoDB: ~5 writes, ~10 reads per item
+            const dynamoWrites = totalItems * 5;
+            const dynamoReads = totalItems * 10;
+            const costDynamoDB = (dynamoWrites * PRICING.dynamoWrite) + (dynamoReads * PRICING.dynamoRead);
+
+            // S3 Storage: ~500KB per doc, ~500MB per video
+            const s3StorageGB = (docCount * 0.0005) + (videoCount * 0.5);
+            const s3Puts = totalItems * 3;
+            const costS3 = (s3StorageGB * PRICING.s3Storage) + (s3Puts * PRICING.s3Put);
+
+            // Messaging
+            const snsMessages = totalItems * 3;
+            const sqsMessages = totalItems * 5;
+            const costMessaging = (snsMessages * PRICING.snsPublish) + (sqsMessages * PRICING.sqsRequest);
+
+            // Subtotals
+            const textractTotal = costTextractOcr + costTextractForms + costTextractTables;
+            const subtotalDoc = textractTotal + costComprehend + costBedrockClass + costSagemaker;
+            const subtotalVideo = costTranscribe + costRekognition + costTranslate + costBedrockSummary;
+            const subtotalInfra = costLambda + costStepFunctions + costApiGateway + costDynamoDB + costS3 + costMessaging;
+
+            const totalCost = subtotalDoc + subtotalVideo + subtotalInfra;
+
+            // Update UI
+            document.getElementById('totalCost').textContent = formatCurrency(totalCost);
+
+            // Document costs
+            document.getElementById('costTextractOcr').textContent = formatCurrency(costTextractOcr);
+            document.getElementById('costTextractForms').textContent = formatCurrency(costTextractForms);
+            document.getElementById('costTextractTables').textContent = formatCurrency(costTextractTables);
+            document.getElementById('costComprehend').textContent = formatCurrency(costComprehend);
+            document.getElementById('costBedrockClass').textContent = formatCurrency(costBedrockClass);
+            document.getElementById('costSagemaker').textContent = formatCurrency(costSagemaker);
+            document.getElementById('subtotalDoc').innerHTML = '<strong>' + formatCurrency(subtotalDoc) + '</strong>';
+
+            // Video costs
+            document.getElementById('costTranscribe').textContent = formatCurrency(costTranscribe);
+            document.getElementById('costRekognition').textContent = formatCurrency(costRekognition);
+            document.getElementById('costTranslate').textContent = formatCurrency(costTranslate);
+            document.getElementById('costBedrockSummary').textContent = formatCurrency(costBedrockSummary);
+            document.getElementById('subtotalVideo').innerHTML = '<strong>' + formatCurrency(subtotalVideo) + '</strong>';
+
+            // Infrastructure costs
+            document.getElementById('costLambda').textContent = formatCurrency(costLambda);
+            document.getElementById('costStepFunctions').textContent = formatCurrency(costStepFunctions);
+            document.getElementById('costApiGateway').textContent = formatCurrency(costApiGateway);
+            document.getElementById('costDynamoDB').textContent = formatCurrency(costDynamoDB);
+            document.getElementById('costS3').textContent = formatCurrency(costS3);
+            document.getElementById('costMessaging').textContent = formatCurrency(costMessaging);
+            document.getElementById('subtotalInfra').innerHTML = '<strong>' + formatCurrency(subtotalInfra) + '</strong>';
+
+            // Per-item costs
+            const perDocCost = docCount > 0 ? subtotalDoc / docCount : 0;
+            const perVideoCost = videoCount > 0 ? subtotalVideo / videoCount / videoDuration : 0;
+            document.getElementById('perDocCost').textContent = formatCurrency(perDocCost);
+            document.getElementById('perVideoCost').textContent = formatCurrency(perVideoCost);
+
+            // Update chart
+            const bedrockTotal = costBedrockClass + costBedrockSummary;
+            updateChart(textractTotal, costComprehend, costRekognition, costTranscribe, costTranslate, bedrockTotal, subtotalInfra, totalCost);
+        }
+
+        function calculateTieredCost(units, priceFirst1M, priceAfter1M) {
+            if (units <= 1000000) {
+                return units * priceFirst1M;
+            } else {
+                return (1000000 * priceFirst1M) + ((units - 1000000) * priceAfter1M);
+            }
+        }
+
+        function formatCurrency(amount) {
+            if (amount >= 1000000) {
+                return '$' + (amount / 1000000).toFixed(2) + 'M';
+            } else if (amount >= 1000) {
+                return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            } else {
+                return '$' + amount.toFixed(2);
+            }
+        }
+
+        function updateChart(textract, comprehend, rekognition, transcribe, translate, bedrock, infra, total) {
+            const maxValue = Math.max(textract, comprehend, rekognition, transcribe, translate, bedrock, infra, 1);
+
+            function setBar(id, amtId, value) {
+                const pct = total > 0 ? (value / total) * 100 : 0;
+                document.getElementById(id).style.width = pct + '%';
+                document.getElementById(amtId).textContent = formatCurrency(value);
+            }
+
+            setBar('chartTextract', 'chartTextractAmt', textract);
+            setBar('chartComprehend', 'chartComprehendAmt', comprehend);
+            setBar('chartRekognition', 'chartRekognitionAmt', rekognition);
+            setBar('chartTranscribe', 'chartTranscribeAmt', transcribe);
+            setBar('chartTranslate', 'chartTranslateAmt', translate);
+            setBar('chartBedrock', 'chartBedrockAmt', bedrock);
+            setBar('chartInfra', 'chartInfraAmt', infra);
+        }
+
+        function showTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Initial calculation
+        calculateCosts();
+    </script>
+</body>
+</html>
