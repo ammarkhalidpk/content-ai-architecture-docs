@@ -1,146 +1,127 @@
-<mxfile host="app.diagrams.net" agent="draw.io" version="24.0.0">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" version="29.3.4">
   <diagram name="Content AI Platform Architecture" id="content-ai-architecture">
-    <mxGraphModel dx="1434" dy="788" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="850" math="0" shadow="0">
+    <mxGraphModel dx="2757" dy="1755" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="850" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <!-- Title -->
-        <mxCell id="title" value="Content AI Platform - System Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" vertex="1" parent="1">
-          <mxGeometry x="450" y="20" width="500" height="40" as="geometry" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" value="Content AI Platform - System Architecture" vertex="1">
+          <mxGeometry height="40" width="500" x="450" y="-10" as="geometry" />
         </mxCell>
-
-        <!-- Frontend Layer -->
-        <mxCell id="frontend-container" value="Frontend Layer" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" vertex="1" parent="1">
-          <mxGeometry x="50" y="80" width="220" height="140" as="geometry" />
+        <mxCell id="frontend-container" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" value="Frontend Layer" vertex="1">
+          <mxGeometry height="140" width="220" x="-40" y="85" as="geometry" />
         </mxCell>
-        <mxCell id="react-ui" value="React UI&#xa;(fbdms-adhoc-imaging-ui)&#xa;&#xa;Material-UI&#xa;AWS Cognito Auth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12" vertex="1" parent="frontend-container">
-          <mxGeometry x="20" y="40" width="180" height="80" as="geometry" />
+        <mxCell id="react-ui" parent="frontend-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12" value="React UI&#xa;(fbdms-adhoc-imaging-ui)&#xa;&#xa;Material-UI&#xa;AWS Cognito Auth" vertex="1">
+          <mxGeometry height="80" width="180" x="20" y="40" as="geometry" />
         </mxCell>
-
-        <!-- API Gateway Layer -->
-        <mxCell id="api-container" value="API Gateway Layer" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" vertex="1" parent="1">
-          <mxGeometry x="320" y="80" width="260" height="260" as="geometry" />
+        <mxCell id="api-container" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" value="API Gateway Layer" vertex="1">
+          <mxGeometry height="260" width="260" x="280" y="80" as="geometry" />
         </mxCell>
-        <mxCell id="public-api" value="Public API Gateway&#xa;(REST)&#xa;&#xa;CloudFront + WAF&#xa;Custom Domain&#xa;Cognito Authorizer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" vertex="1" parent="api-container">
-          <mxGeometry x="20" y="40" width="220" height="90" as="geometry" />
+        <mxCell id="public-api" parent="api-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" value="Public API Gateway&#xa;(REST)&#xa;&#xa;CloudFront + WAF&#xa;Custom Domain&#xa;Cognito Authorizer" vertex="1">
+          <mxGeometry height="90" width="220" x="20" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="private-api" value="Private API Gateway&#xa;(VPC Endpoints)&#xa;&#xa;Internal Services&#xa;API Key Auth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" vertex="1" parent="api-container">
-          <mxGeometry x="20" y="150" width="220" height="90" as="geometry" />
+        <mxCell id="private-api" parent="api-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" value="Private API Gateway&#xa;(VPC Endpoints)&#xa;&#xa;Internal Services&#xa;API Key Auth" vertex="1">
+          <mxGeometry height="90" width="220" x="20" y="150" as="geometry" />
         </mxCell>
-
-        <!-- Orchestration Layer -->
-        <mxCell id="orchestration-container" value="Orchestration Layer (self-service-imaging-app)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" vertex="1" parent="1">
-          <mxGeometry x="640" y="80" width="520" height="260" as="geometry" />
+        <mxCell id="orchestration-container" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" value="Orchestration Layer (self-service-imaging-app)" vertex="1">
+          <mxGeometry height="260" width="560" x="640" y="80" as="geometry" />
         </mxCell>
-        <mxCell id="step-functions" value="Step Functions&#xa;Job Processing State Machine&#xa;&#xa;• Copy Input Files&#xa;• Start CIP/VPE&#xa;• Process Outputs&#xa;• Complete Job" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11" vertex="1" parent="orchestration-container">
-          <mxGeometry x="20" y="40" width="230" height="110" as="geometry" />
+        <mxCell id="step-functions" parent="orchestration-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11" value="Step Functions&#xa;Job Processing State Machine&#xa;&#xa;• Copy Input Files&#xa;• Start CIP/VPE&#xa;• Process Outputs&#xa;• Complete Job" vertex="1">
+          <mxGeometry height="110" width="230" x="20" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="api-lambdas" value="API Lambda Functions&#xa;&#xa;• Request Upload&#xa;• Start Processing&#xa;• Get Job Status&#xa;• Get Output&#xa;• Human Review" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11" vertex="1" parent="orchestration-container">
-          <mxGeometry x="270" y="40" width="230" height="110" as="geometry" />
+        <mxCell id="api-lambdas" parent="orchestration-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11" value="API Lambda Functions&#xa;&#xa;• Request Upload&#xa;• Start Processing&#xa;• Get Job Status&#xa;• Get Output&#xa;• Human Review" vertex="1">
+          <mxGeometry height="110" width="230" x="324" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="event-lambdas" value="Event Lambda Functions&#xa;&#xa;• Process CIP Output&#xa;• Process VPE Output&#xa;• Raw Inbound Processing&#xa;• Job Deletion Cleanup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11" vertex="1" parent="orchestration-container">
-          <mxGeometry x="20" y="160" width="230" height="90" as="geometry" />
+        <mxCell id="event-lambdas" parent="orchestration-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11" value="Event Lambda Functions&#xa;&#xa;• Process CIP Output&#xa;• Process VPE Output&#xa;• Raw Inbound Processing&#xa;• Job Deletion Cleanup" vertex="1">
+          <mxGeometry height="90" width="230" x="20" y="160" as="geometry" />
         </mxCell>
-        <mxCell id="orchestration-db" value="DynamoDB&#xa;Jobs &amp; Files Table&#xa;&#xa;PK: JobId/FileId&#xa;Stream Enabled" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11" vertex="1" parent="orchestration-container">
-          <mxGeometry x="270" y="160" width="230" height="90" as="geometry" />
+        <mxCell id="orchestration-db" parent="orchestration-container" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11" value="DynamoDB&#xa;Jobs &amp; Files Table&#xa;&#xa;PK: JobId/FileId&#xa;Stream Enabled" vertex="1">
+          <mxGeometry height="90" width="230" x="320" y="160" as="geometry" />
         </mxCell>
-
-        <!-- Processing Services Layer -->
-        <mxCell id="processing-container" value="Processing Services Layer" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" vertex="1" parent="1">
-          <mxGeometry x="50" y="380" width="1110" height="300" as="geometry" />
+        <mxCell id="processing-container" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" value="Processing Services Layer" vertex="1">
+          <mxGeometry height="300" width="1150" x="50" y="380" as="geometry" />
         </mxCell>
-
-        <!-- CIP Service -->
-        <mxCell id="cip-service" value="CIP Service (textract-imaging-service)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1" vertex="1" parent="processing-container">
-          <mxGeometry x="20" y="40" width="520" height="240" as="geometry" />
+        <mxCell id="cip-service" parent="processing-container" style="swimlane;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1" value="CIP Service (textract-imaging-service)" vertex="1">
+          <mxGeometry height="240" width="520" x="20" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="cip-state-machine" value="CIP Step Functions&#xa;&#xa;• Start Textract&#xa;• Process Results&#xa;• Comprehend Analysis&#xa;• Bedrock Classification&#xa;• Generate Output" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10" vertex="1" parent="cip-service">
-          <mxGeometry x="15" y="35" width="150" height="90" as="geometry" />
+        <mxCell id="cip-state-machine" parent="cip-service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10" value="CIP Step Functions&#xa;&#xa;• Start Textract&#xa;• Process Results&#xa;• Comprehend Analysis&#xa;• Bedrock Classification&#xa;• Generate Output" vertex="1">
+          <mxGeometry height="90" width="150" x="15" y="35" as="geometry" />
         </mxCell>
-        <mxCell id="cip-lambdas" value="CIP Lambda Functions&#xa;&#xa;• Textract Handler&#xa;• Resume Step Functions&#xa;• Delete Downloaded Object&#xa;• Redrive to Lambda" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10" vertex="1" parent="cip-service">
-          <mxGeometry x="180" y="35" width="150" height="90" as="geometry" />
+        <mxCell id="cip-lambdas" parent="cip-service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10" value="CIP Lambda Functions&#xa;&#xa;• Textract Handler&#xa;• Resume Step Functions&#xa;• Delete Downloaded Object&#xa;• Redrive to Lambda" vertex="1">
+          <mxGeometry height="90" width="150" x="180" y="35" as="geometry" />
         </mxCell>
-        <mxCell id="cip-ai-services" value="AWS AI Services&#xa;&#xa;• Textract (OCR)&#xa;• Comprehend (PII)&#xa;• Bedrock (Classification)&#xa;• SageMaker (Training)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontColor=#333333" vertex="1" parent="cip-service">
-          <mxGeometry x="345" y="35" width="160" height="90" as="geometry" />
+        <mxCell id="cip-ai-services" parent="cip-service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontColor=#333333" value="AWS AI Services&#xa;&#xa;• Textract (OCR)&#xa;• Comprehend (PII)&#xa;• Bedrock (Classification)&#xa;• SageMaker (Training)" vertex="1">
+          <mxGeometry height="90" width="160" x="345" y="35" as="geometry" />
         </mxCell>
-        <mxCell id="cip-db" value="DynamoDB Tables&#xa;&#xa;• Job Status Table&#xa;• Client Table&#xa;• Policy Table&#xa;• Knowledge Base" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10" vertex="1" parent="cip-service">
-          <mxGeometry x="15" y="140" width="150" height="85" as="geometry" />
+        <mxCell id="cip-db" parent="cip-service" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10" value="DynamoDB Tables&#xa;&#xa;• Job Status Table&#xa;• Client Table&#xa;• Policy Table&#xa;• Knowledge Base" vertex="1">
+          <mxGeometry height="85" width="150" x="15" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="cip-sns" value="SNS Topics&#xa;&#xa;• Job Notifications&#xa;• Post-Processing Output&#xa;• Human Review Required" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10" vertex="1" parent="cip-service">
-          <mxGeometry x="180" y="140" width="150" height="85" as="geometry" />
+        <mxCell id="cip-sns" parent="cip-service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10" value="SNS Topics&#xa;&#xa;• Job Notifications&#xa;• Post-Processing Output&#xa;• Human Review Required" vertex="1">
+          <mxGeometry height="85" width="150" x="180" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="cip-s3" value="S3 Buckets&#xa;&#xa;• Input Documents&#xa;• Textract Output&#xa;• Processed Results&#xa;• Training Data" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontColor=#333333" vertex="1" parent="cip-service">
-          <mxGeometry x="345" y="140" width="160" height="85" as="geometry" />
+        <mxCell id="cip-s3" parent="cip-service" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontColor=#333333" value="S3 Buckets&#xa;&#xa;• Input Documents&#xa;• Textract Output&#xa;• Processed Results&#xa;• Training Data" vertex="1">
+          <mxGeometry height="85" width="160" x="345" y="140" as="geometry" />
         </mxCell>
-
-        <!-- VPE Service -->
-        <mxCell id="vpe-service" value="VPE Service (video-processing-enrichment)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1" vertex="1" parent="processing-container">
-          <mxGeometry x="570" y="40" width="520" height="240" as="geometry" />
+        <mxCell id="vpe-service" parent="processing-container" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1" value="VPE Service (video-processing-enrichment)" vertex="1">
+          <mxGeometry height="240" width="560" x="570" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="vpe-state-machine" value="VPE Step Functions&#xa;&#xa;• Transcribe Job&#xa;• Generate Subtitles&#xa;• Rekognition Analysis&#xa;• Translate&#xa;• Bedrock Summary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10" vertex="1" parent="vpe-service">
-          <mxGeometry x="15" y="35" width="150" height="90" as="geometry" />
+        <mxCell id="vpe-state-machine" parent="vpe-service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10" value="VPE Step Functions&#xa;&#xa;• Transcribe Job&#xa;• Generate Subtitles&#xa;• Rekognition Analysis&#xa;• Translate&#xa;• Bedrock Summary" vertex="1">
+          <mxGeometry height="90" width="150" x="15" y="35" as="geometry" />
         </mxCell>
-        <mxCell id="vpe-lambdas" value="VPE Lambda Functions&#xa;&#xa;• Upload Job&#xa;• Receive Upload&#xa;• Process Transaction&#xa;• Subtitle Generation&#xa;• Get Job Status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10" vertex="1" parent="vpe-service">
-          <mxGeometry x="180" y="35" width="150" height="90" as="geometry" />
+        <mxCell id="vpe-lambdas" parent="vpe-service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10" value="VPE Lambda Functions&#xa;&#xa;• Upload Job&#xa;• Receive Upload&#xa;• Process Transaction&#xa;• Subtitle Generation&#xa;• Get Job Status" vertex="1">
+          <mxGeometry height="90" width="150" x="180" y="35" as="geometry" />
         </mxCell>
-        <mxCell id="vpe-ai-services" value="AWS AI Services&#xa;&#xa;• Transcribe (Audio)&#xa;• Rekognition (Video)&#xa;• Translate&#xa;• Bedrock (Summaries)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontColor=#333333" vertex="1" parent="vpe-service">
-          <mxGeometry x="345" y="35" width="160" height="90" as="geometry" />
+        <mxCell id="vpe-ai-services" parent="vpe-service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontColor=#333333" value="AWS AI Services&#xa;&#xa;• Transcribe (Audio)&#xa;• Rekognition (Video)&#xa;• Translate&#xa;• Bedrock (Summaries)" vertex="1">
+          <mxGeometry height="90" width="160" x="378" y="35" as="geometry" />
         </mxCell>
-        <mxCell id="vpe-db" value="DynamoDB Tables&#xa;&#xa;• Job Table (Jobs + Transactions)&#xa;• Face Metadata Table&#xa;GSI: Type, Status, JobId" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10" vertex="1" parent="vpe-service">
-          <mxGeometry x="15" y="140" width="150" height="85" as="geometry" />
+        <mxCell id="vpe-db" parent="vpe-service" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10" value="DynamoDB Tables&#xa;&#xa;• Job Table (Jobs + Transactions)&#xa;• Face Metadata Table&#xa;GSI: Type, Status, JobId" vertex="1">
+          <mxGeometry height="85" width="150" x="15" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="vpe-sns" value="SNS Topics&#xa;&#xa;• Post-Processing Output&#xa;• Job Completion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10" vertex="1" parent="vpe-service">
-          <mxGeometry x="180" y="140" width="150" height="85" as="geometry" />
+        <mxCell id="vpe-sns" parent="vpe-service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10" value="SNS Topics&#xa;&#xa;• Post-Processing Output&#xa;• Job Completion" vertex="1">
+          <mxGeometry height="85" width="150" x="180" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="vpe-s3" value="S3 Buckets&#xa;&#xa;• Media Input&#xa;• Transcription Output&#xa;• Subtitles (SRT/VTT)&#xa;• Rekognition Results" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontColor=#333333" vertex="1" parent="vpe-service">
-          <mxGeometry x="345" y="140" width="160" height="85" as="geometry" />
+        <mxCell id="vpe-s3" parent="vpe-service" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontColor=#333333" value="S3 Buckets&#xa;&#xa;• Media Input&#xa;• Transcription Output&#xa;• Subtitles (SRT/VTT)&#xa;• Rekognition Results" vertex="1">
+          <mxGeometry height="85" width="160" x="378" y="140" as="geometry" />
         </mxCell>
-
-        <!-- Messaging Layer -->
-        <mxCell id="messaging-container" value="Messaging &amp; Events" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" vertex="1" parent="1">
-          <mxGeometry x="50" y="720" width="560" height="110" as="geometry" />
+        <mxCell id="messaging-container" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" value="Messaging &amp; Events" vertex="1">
+          <mxGeometry height="110" width="560" x="50" y="720" as="geometry" />
         </mxCell>
-        <mxCell id="sqs-queues" value="SQS Queues&#xa;&#xa;• CIP Output Queue&#xa;• VPE Output Queue&#xa;• Raw Inbound Queue&#xa;• Human Review Queue&#xa;• DLQs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" vertex="1" parent="messaging-container">
-          <mxGeometry x="20" y="40" width="250" height="55" as="geometry" />
+        <mxCell id="sqs-queues" parent="messaging-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" value="SQS Queues&#xa;&#xa;• CIP Output Queue&#xa;• VPE Output Queue&#xa;• Raw Inbound Queue&#xa;• Human Review Queue&#xa;• DLQs" vertex="1">
+          <mxGeometry height="55" width="250" x="20" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="eventbridge" value="EventBridge&#xa;&#xa;• Textract Completion&#xa;• Transcribe Completion&#xa;• Rekognition Completion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" vertex="1" parent="messaging-container">
-          <mxGeometry x="290" y="40" width="250" height="55" as="geometry" />
+        <mxCell id="eventbridge" parent="messaging-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" value="EventBridge&#xa;&#xa;• Textract Completion&#xa;• Transcribe Completion&#xa;• Rekognition Completion" vertex="1">
+          <mxGeometry height="55" width="250" x="290" y="40" as="geometry" />
         </mxCell>
-
-        <!-- External Integrations -->
-        <mxCell id="external-container" value="External Integrations" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" vertex="1" parent="1">
-          <mxGeometry x="650" y="720" width="510" height="110" as="geometry" />
+        <mxCell id="external-container" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" value="External Integrations" vertex="1">
+          <mxGeometry height="110" width="510" x="650" y="720" as="geometry" />
         </mxCell>
-        <mxCell id="frs-integration" value="FRS&#xa;(File Repository Service)&#xa;&#xa;File Transfer Integration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontColor=#333333" vertex="1" parent="external-container">
-          <mxGeometry x="20" y="40" width="230" height="55" as="geometry" />
+        <mxCell id="frs-integration" parent="external-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontColor=#333333" value="FRS&#xa;(File Repository Service)&#xa;&#xa;File Transfer Integration" vertex="1">
+          <mxGeometry height="55" width="230" x="20" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="iesc-integration" value="IESC&#xa;(Integrated Enterprise System)&#xa;&#xa;Document Archive Integration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontColor=#333333" vertex="1" parent="external-container">
-          <mxGeometry x="260" y="40" width="230" height="55" as="geometry" />
+        <mxCell id="iesc-integration" parent="external-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontColor=#333333" value="IESC&#xa;(Integrated Enterprise System)&#xa;&#xa;Document Archive Integration" vertex="1">
+          <mxGeometry height="55" width="230" x="260" y="40" as="geometry" />
         </mxCell>
-
-        <!-- Arrows: Frontend to API Gateway -->
-        <mxCell id="arrow-fe-api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0066CC;" edge="1" parent="1" source="react-ui" target="public-api">
+        <mxCell id="arrow-fe-api" edge="1" parent="1" source="react-ui" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0066CC;" target="public-api">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="label-fe-api" value="HTTPS/REST&#xa;Cognito JWT" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#0066CC;" vertex="1" connectable="0" parent="arrow-fe-api">
-          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
-            <mxPoint x="5" y="-10" as="offset" />
+        <mxCell id="label-fe-api" connectable="0" parent="arrow-fe-api" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#0066CC;" value="HTTPS/REST&#xa;Cognito JWT" vertex="1">
+          <mxGeometry relative="1" x="-0.1" y="2" as="geometry">
+            <mxPoint x="5" y="-23" as="offset" />
           </mxGeometry>
         </mxCell>
-
-        <!-- Arrows: API Gateway to Orchestration -->
-        <mxCell id="arrow-api-orch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0066CC;" edge="1" parent="1" source="public-api" target="api-lambdas">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="arrow-api-orch" edge="1" parent="1" source="public-api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0066CC;" target="api-lambdas">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="420" y="50" />
+              <mxPoint x="1025" y="50" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="label-api-orch" value="Lambda Invoke" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#0066CC;" vertex="1" connectable="0" parent="arrow-api-orch">
-          <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+        <mxCell id="label-api-orch" connectable="0" parent="arrow-api-orch" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#0066CC;" value="Lambda Invoke" vertex="1">
+          <mxGeometry relative="1" x="-0.1" y="1" as="geometry">
             <mxPoint y="-10" as="offset" />
           </mxGeometry>
         </mxCell>
-
-        <!-- Arrows: API Lambdas to Step Functions -->
-        <mxCell id="arrow-lambda-sfn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673A6;" edge="1" parent="1" source="api-lambdas" target="step-functions">
+        <mxCell id="arrow-lambda-sfn" edge="1" parent="1" source="api-lambdas" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673A6;" target="step-functions">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="925" y="175" />
@@ -148,44 +129,39 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="label-lambda-sfn" value="StartExecution" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#9673A6;" vertex="1" connectable="0" parent="arrow-lambda-sfn">
-          <mxGeometry x="0.2" y="1" relative="1" as="geometry">
+        <mxCell id="label-lambda-sfn" connectable="0" parent="arrow-lambda-sfn" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#9673A6;" value="StartExecution" vertex="1">
+          <mxGeometry relative="1" x="0.2" y="1" as="geometry">
             <mxPoint x="15" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-
-        <!-- Arrows: Step Functions to CIP -->
-        <mxCell id="arrow-sfn-cip" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#D79B00;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="step-functions" target="cip-service">
+        <mxCell id="arrow-sfn-cip" edge="1" parent="1" source="step-functions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#D79B00;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="cip-service">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="775" y="360" />
+              <mxPoint x="570" y="160" />
+              <mxPoint x="570" y="360" />
               <mxPoint x="330" y="360" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="label-sfn-cip" value="Start CIP Task&#xa;(SNS/API)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#D79B00;" vertex="1" connectable="0" parent="arrow-sfn-cip">
-          <mxGeometry x="0.3" y="-1" relative="1" as="geometry">
+        <mxCell id="label-sfn-cip" connectable="0" parent="arrow-sfn-cip" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#D79B00;" value="Start CIP Task&#xa;(SNS/API)" vertex="1">
+          <mxGeometry relative="1" x="0.3" y="-1" as="geometry">
             <mxPoint x="50" y="-10" as="offset" />
           </mxGeometry>
         </mxCell>
-
-        <!-- Arrows: Step Functions to VPE -->
-        <mxCell id="arrow-sfn-vpe" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673A6;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="step-functions" target="vpe-service">
+        <mxCell id="arrow-sfn-vpe" edge="1" parent="1" source="step-functions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673A6;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="vpe-service">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="775" y="360" />
-              <mxPoint x="880" y="360" />
+              <mxPoint x="900" y="200" />
+              <mxPoint x="900" y="420" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="label-sfn-vpe" value="Start VPE Task&#xa;(SNS/API)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#9673A6;" vertex="1" connectable="0" parent="arrow-sfn-vpe">
-          <mxGeometry x="0.2" y="2" relative="1" as="geometry">
-            <mxPoint x="-30" y="-10" as="offset" />
+        <mxCell id="label-sfn-vpe" connectable="0" parent="arrow-sfn-vpe" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#9673A6;" value="Start VPE Task&#xa;(SNS/API)" vertex="1">
+          <mxGeometry relative="1" x="0.2" y="2" as="geometry">
+            <mxPoint x="-5" y="28" as="offset" />
           </mxGeometry>
         </mxCell>
-
-        <!-- Arrows: CIP SNS to Orchestration Event Lambdas -->
-        <mxCell id="arrow-cip-sns-orch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#D6B656;dashed=1;" edge="1" parent="1" source="cip-sns" target="event-lambdas">
+        <mxCell id="arrow-cip-sns-orch" edge="1" parent="1" source="cip-sns" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#D6B656;dashed=1;" target="event-lambdas">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="310" y="700" />
@@ -193,14 +169,12 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="label-cip-sns-orch" value="SNS → SQS → Lambda&#xa;Job Completed" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#D6B656;" vertex="1" connectable="0" parent="arrow-cip-sns-orch">
-          <mxGeometry x="-0.3" y="-1" relative="1" as="geometry">
-            <mxPoint x="50" y="-10" as="offset" />
+        <mxCell id="label-cip-sns-orch" connectable="0" parent="arrow-cip-sns-orch" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#D6B656;" value="SNS → SQS → Lambda&#xa;Job Completed" vertex="1">
+          <mxGeometry relative="1" x="-0.3" y="-1" as="geometry">
+            <mxPoint x="8" y="-1" as="offset" />
           </mxGeometry>
         </mxCell>
-
-        <!-- Arrows: VPE SNS to Orchestration Event Lambdas -->
-        <mxCell id="arrow-vpe-sns-orch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673A6;dashed=1;" edge="1" parent="1" source="vpe-sns" target="event-lambdas">
+        <mxCell id="arrow-vpe-sns-orch" edge="1" parent="1" source="vpe-sns" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673A6;dashed=1;" target="event-lambdas">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="860" y="700" />
@@ -208,14 +182,12 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="label-vpe-sns-orch" value="SNS → SQS → Lambda&#xa;Job Completed" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#9673A6;" vertex="1" connectable="0" parent="arrow-vpe-sns-orch">
-          <mxGeometry x="0.1" y="-2" relative="1" as="geometry">
-            <mxPoint x="-20" y="-10" as="offset" />
+        <mxCell id="label-vpe-sns-orch" connectable="0" parent="arrow-vpe-sns-orch" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#9673A6;" value="SNS → SQS → Lambda&#xa;Job Completed" vertex="1">
+          <mxGeometry relative="1" x="0.1" y="-2" as="geometry">
+            <mxPoint x="33" y="145" as="offset" />
           </mxGeometry>
         </mxCell>
-
-        <!-- Arrows: Event Lambdas to Step Functions (Resume) -->
-        <mxCell id="arrow-event-resume" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82B366;dashed=1;" edge="1" parent="1" source="event-lambdas" target="step-functions">
+        <mxCell id="arrow-event-resume" edge="1" parent="1" source="event-lambdas" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82B366;dashed=1;" target="step-functions">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="620" y="290" />
@@ -223,52 +195,47 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="label-event-resume" value="Resume Task&#xa;(SendTaskSuccess)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#82B366;" vertex="1" connectable="0" parent="arrow-event-resume">
-          <mxGeometry x="0.3" y="1" relative="1" as="geometry">
-            <mxPoint x="40" y="-5" as="offset" />
+        <mxCell id="label-event-resume" connectable="0" parent="arrow-event-resume" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#82B366;" value="Resume Task&#xa;(SendTaskSuccess)" vertex="1">
+          <mxGeometry relative="1" x="0.3" y="1" as="geometry">
+            <mxPoint x="16" y="37" as="offset" />
           </mxGeometry>
         </mxCell>
-
-        <!-- Legend -->
-        <mxCell id="legend-container" value="Legend" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
-          <mxGeometry x="1210" y="80" width="160" height="250" as="geometry" />
+        <mxCell id="legend-container" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;fontStyle=1;fontColor=#333333;" value="Legend" vertex="1">
+          <mxGeometry height="410" width="160" x="1210" y="80" as="geometry" />
         </mxCell>
-        <mxCell id="legend-sync" value="Synchronous Call" style="text;html=1;strokeColor=#0066CC;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="legend-container">
-          <mxGeometry x="30" y="40" width="120" height="20" as="geometry" />
+        <mxCell id="legend-sync" parent="legend-container" style="text;html=1;strokeColor=#0066CC;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;" value="Synchronous Call" vertex="1">
+          <mxGeometry height="40" width="140" x="10" y="30" as="geometry" />
         </mxCell>
-        <mxCell id="legend-sync-line" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#0066CC;" edge="1" parent="legend-container">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
+        <mxCell id="legend-sync-line" edge="1" parent="legend-container" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#0066CC;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
             <mxPoint x="10" y="50" as="sourcePoint" />
             <mxPoint x="25" y="50" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="legend-async" value="Asynchronous Call" style="text;html=1;strokeColor=#D6B656;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="legend-container">
-          <mxGeometry x="30" y="75" width="120" height="20" as="geometry" />
+        <mxCell id="legend-async" parent="legend-container" style="text;html=1;strokeColor=#D6B656;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;" value="Asynchronous Call" vertex="1">
+          <mxGeometry height="55" width="140" x="10" y="90" as="geometry" />
         </mxCell>
-        <mxCell id="legend-async-line" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#D6B656;dashed=1;" edge="1" parent="legend-container">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
+        <mxCell id="legend-async-line" edge="1" parent="legend-container" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#D6B656;dashed=1;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
             <mxPoint x="10" y="85" as="sourcePoint" />
             <mxPoint x="25" y="85" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="legend-compute" value="Compute/Lambda" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9" vertex="1" parent="legend-container">
-          <mxGeometry x="10" y="110" width="140" height="25" as="geometry" />
+        <mxCell id="legend-compute" parent="legend-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;" value="Compute/Lambda" vertex="1">
+          <mxGeometry height="50" width="140" x="10" y="150" as="geometry" />
         </mxCell>
-        <mxCell id="legend-orchestration" value="Orchestration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9" vertex="1" parent="legend-container">
-          <mxGeometry x="10" y="145" width="140" height="25" as="geometry" />
+        <mxCell id="legend-orchestration" parent="legend-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;" value="Orchestration" vertex="1">
+          <mxGeometry height="55" width="140" x="10" y="210" as="geometry" />
         </mxCell>
-        <mxCell id="legend-storage" value="Storage/Database" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=5;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9" vertex="1" parent="legend-container">
-          <mxGeometry x="10" y="180" width="140" height="30" as="geometry" />
+        <mxCell id="legend-storage" parent="legend-container" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=5;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;" value="Storage/Database" vertex="1">
+          <mxGeometry height="50" width="140" x="10" y="280" as="geometry" />
         </mxCell>
-        <mxCell id="legend-messaging" value="Messaging/API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9" vertex="1" parent="legend-container">
-          <mxGeometry x="10" y="220" width="140" height="25" as="geometry" />
+        <mxCell id="legend-messaging" parent="legend-container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;" value="Messaging/API" vertex="1">
+          <mxGeometry height="50" width="140" x="10" y="345" as="geometry" />
         </mxCell>
-
-        <!-- Notes -->
-        <mxCell id="notes" value="Entry Points:&#xa;1. Frontend UI → API Gateway → Orchestration&#xa;2. Direct API → API Gateway → Orchestration&#xa;3. S3 Upload → CIP/VPE Services Directly&#xa;4. External Systems → FRS/IESC Integration" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontColor=#333333;fontStyle=0" vertex="1" parent="1">
-          <mxGeometry x="1210" y="360" width="160" height="120" as="geometry" />
+        <mxCell id="notes" parent="1" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=17;fontColor=#333333;fontStyle=0" value="Entry Points:&#xa;1. Frontend UI → API Gateway → Orchestration&#xa;2. Direct API → API Gateway → Orchestration&#xa;3. S3 Upload → CIP/VPE Services Directly&#xa;4. External Systems → FRS/IESC Integration" vertex="1">
+          <mxGeometry height="310" width="160" x="1210" y="500" as="geometry" />
         </mxCell>
-
       </root>
     </mxGraphModel>
   </diagram>
